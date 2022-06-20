@@ -1,16 +1,14 @@
-'use strict'
+import { test } from "tap";
+import helper from "../helper.js";
 
-const { test } = require('tap')
-const { build } = require('../helper')
-
-test('default root route', async (t) => {
-  const app = await build(t)
+test("default root route", async (t) => {
+  const app = await helper.build(t);
 
   const res = await app.inject({
-    url: '/'
-  })
-  t.same(JSON.parse(res.payload), { root: true })
-})
+    url: "/",
+  });
+  t.same(JSON.parse(res.payload), { root: true });
+});
 
 // inject callback style:
 //

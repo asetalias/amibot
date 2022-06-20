@@ -1,16 +1,14 @@
-'use strict'
+import { test } from "tap";
+import helper from "../helper.js";
 
-const { test } = require('tap')
-const { build } = require('../helper')
-
-test('example is loaded', async (t) => {
-  const app = await build(t)
+test("example is loaded", async (t) => {
+  const app = await helper.build(t);
 
   const res = await app.inject({
-    url: '/example'
-  })
-  t.equal(res.payload, 'this is an example')
-})
+    url: "/example",
+  });
+  t.equal(res.payload, "this is an example");
+});
 
 // inject callback style:
 //
