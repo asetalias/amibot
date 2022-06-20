@@ -1,0 +1,47 @@
+{
+  "extends": [
+    "airbnb/base",
+    "plugin:import/errors",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  "rules": {
+    "import/extensions": ["error", "ignorePackages"],
+    "prettier/prettier": [
+      "warn",
+      {},
+      {
+        
+        "usePrettierrc": true // Use .prettierrc file as source
+      }
+    ], 
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "func-names": "off",
+    "no-process-exit": "off",
+    "object-shorthand": "off",
+    "class-methods-use-this": "off",
+    "eslint-plugin-react": "off"
+  },
+  "plugins": [
+    "prettier",
+    "import"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "settings": {},
+  "ignorePatterns": [
+    "/public/",
+    "*.md"
+  ]
+}

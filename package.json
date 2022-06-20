@@ -10,7 +10,10 @@
   "scripts": {
     "test": "tap \"test/**/*.test.js\"",
     "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "dev": "fastify start -w -l info -P app.js",
+    "lint": "eslint . --ext .js,.mjs,.jsx --quiet",
+    "fix": "eslint . --ext .js,.mjs,.jsx --quiet --fix",
+    "format": "prettier \"./**/*.{js,mjs}\" --write"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +27,11 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
+    "eslint": "^8.18.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.7.1",
     "tap": "^16.1.0"
   }
 }
