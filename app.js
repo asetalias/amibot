@@ -1,6 +1,7 @@
 import * as path from "path";
 import AutoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
+import 'dotenv/config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
