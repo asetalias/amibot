@@ -33,16 +33,17 @@ export default async function (fastify, opts) {
           data: {
             messaging_product: "whatsapp",
             to: from,
-            text: { body: `Ack: ${msgBody}` },
+            text: { body: `${msgBody}` },
           },
           headers: { "Content-Type": "application/json" },
         });
       }
-      res.sendStatus(200);
+      res.code(200);
     } else {
       // Return a '404 Not Found' if event is not from a WhatsApp API
-      res.sendStatus(404);
+      res.code(404);
     }
+    return {};
   });
 
   // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
@@ -62,11 +63,13 @@ export default async function (fastify, opts) {
       if (mode === "subscribe" && tok === verificationToken) {
         // Respond with 200 OK and challenge token from the request
         console.log("WEBHOOK_VERIFIED");
-        res.status(200).send(challenge);
+        res.code(200).send(challenge);
       } else {
         // Responds with '403 Forbidden' if verify tokens do not match
-        res.sendStatus(403);
+        res.code(403);
       }
     }
+    res.code(403);
+    return {};
   });
 }
