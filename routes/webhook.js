@@ -1,11 +1,21 @@
-import axios from "axios";
+
 import "dotenv/config";
+import { checkInitialState,initialState } from "../initialstate.js";
+import connect from "../database.js"
+import {clientClose} from "../database.js";
+import { updateState } from "../updatestate.js";
+import { runState } from "../runstate.js";
+
+// Initializing the database variable and the client
+const database = await connect();
+const db = database[0];
+const client = database[1];
 
 // Access token for your app
 // (copy token from DevX getting started page
 // and save it as environment variable into the .env file)
-const token = `EAAPVWvQg1ZAcBADTARGDG4UpNXyEKksjtGAeJWfozbsdyYuj8DZC1tQZCUFK50RbVNVEGwkfIi9Q5snK1ZCJ4ZBENZCcRbtf3usFlNUklFKlNIvSPtkAyXD0jfokaZCq7AeMrlDeRYXaEn6ZAyZASV0rD16BkFyl9stqbBNuOBgxd8RNPSfuyxfnHRi5hFZBR4SpPi6qGTJ0ZASwO1IfIYhGJx5crZAMfHZB8wQMZD`;
-console.log(`Token is:${token}`);
+const token = `EAAPVWvQg1ZAcBABSgZBFehBNFiF11VgNnwaBdqgUw6cI1ZCVsIqYNQLAGTOcK1R6GHbKGOqkHY4XXWbZAZBEKuO1rsFceMiaYZAtUeCZAG9hYZAcCmZBIHIANMs0ZC0XhXZBEXZAXhiwoFtUSrJgj3nVaAvKBNiEZBrs8vWBnK6D0vyvJVfsbvQH8BINZAQdW8otZBWfZCMJKnI3OTZBbOSVz9Jwz5TcLTYCNdjsemuMZD`;
+console.log(`whatsapp token is :${token}`);
 
 // @todo setup env
 const webhookVerificationToken = process.env.VERIFY_TOKEN;
@@ -31,28 +41,19 @@ export default async function (fastify, opts) {
         const { from } = req.body.entry[0].changes[0].value.messages[0]; // extract the phone number from the webhook payload
         const msgBody =
           req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-        const url = axios({
-          method: "POST", // method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-          url: `https://graph.facebook.com/v12.0/${phoneNumberId}/messages`,
+      (async () => {  
+        
+          if(await checkInitialState(from,db)) //Checking whether the contact is already saved in the database or not
+            await initialState(from,db);
 
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": " application/json",
-          },
-          data: {
-            messaging_product: "whatsapp",
-            to: from,
-            type: "template",
-            template: {
-              name: "hello_world",
-              language: {
-                code: "en_US",
-              },
-            },
-          },
-        }).catch((err) =>
-          console.log(`error in posting request to meta api: ${err}`)
-        );
+            await runState(msgBody,db,from,phoneNumberId,token); // Runs the current state
+            const updatedState = await updateState(from,db);     // Updates the current state             
+
+       
+           
+            //await clientClose(client);
+        })()
+
         res.code(200);
       } else {
         // Return a '404 Not Found' if event is not from a WhatsApp API
@@ -83,6 +84,6 @@ export default async function (fastify, opts) {
       }
     }
     res.code(403);
-    // return {};
+    
   });
 }
