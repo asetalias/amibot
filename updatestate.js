@@ -1,44 +1,44 @@
+export async function updateState(phnNum, db) {
+  let updatedState;
 
-export async function updateState(phnNum,db){
-    let updatedState;
+  const currState = await db.findOne({ phone: `${phnNum}` });
 
-    const currState = await db.findOne({phone:`${phnNum}`});
-  
+  try {
+    switch (currState.state) {
+      case "welcome":
+        updatedState = "username";
+        break;
 
-try{
-    switch(currState.state)
-    {
-        case "welcome" :   updatedState = "username";
-                         break;
+      case "username":
+        updatedState = "pass";
+        break;
 
-        case "username"   :   updatedState = "pass";
-                         break;
-        
-        case "pass"   :   updatedState = "buttons";
-                         break;
-        
+      case "pass":
+        updatedState = "buttons";
+        break;
+      default : 
+        updatedState = "buttons";
     }
 
-
-    await db.updateOne({phone:`${phnNum}`},
-    {
-        $set:{
-            state: `${updatedState}`
-        }
-    }, { upsert: true })
+    await db.updateOne(
+      { phone: `${phnNum}` },
+      {
+        $set: {
+          state: `${updatedState}`,
+        },
+      },
+      { upsert: true }
+    );
 
     return updatedState;
-
- 
-}catch (err) {
+  } catch (err) {
     console.error(err);
     throw err;
-}
-//    finally {
-//     client.close(); // closing the client
-//   }
-
+  }
+  //    finally {
+  //     client.close(); // closing the client
+  //   }
 }
 
 // Test Call
-//updateState(888812888);
+// updateState(888812888);

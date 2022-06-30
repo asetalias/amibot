@@ -20,6 +20,6 @@ export default async function connect() {
   }
 }
 
-export async function clientClose(client){
+export async function clientClose(client) {
   await client.close();
 }

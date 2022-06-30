@@ -4,7 +4,9 @@ import { checkInitialState,initialState } from "../initialstate.js";
 import connect from "../database.js"
 import {clientClose} from "../database.js";
 import { updateState } from "../updatestate.js";
-import { runState } from "../runstate.js";
+import { runState } from "../normalstate.js";
+import { runIntegerState } from "../integerstate.js";
+import { logout } from "../logout.js";
 
 // Initializing the database variable and the client
 const database = await connect();
@@ -14,7 +16,7 @@ const client = database[1];
 // Access token for your app
 // (copy token from DevX getting started page
 // and save it as environment variable into the .env file)
-const token = `EAAPVWvQg1ZAcBABSgZBFehBNFiF11VgNnwaBdqgUw6cI1ZCVsIqYNQLAGTOcK1R6GHbKGOqkHY4XXWbZAZBEKuO1rsFceMiaYZAtUeCZAG9hYZAcCmZBIHIANMs0ZC0XhXZBEXZAXhiwoFtUSrJgj3nVaAvKBNiEZBrs8vWBnK6D0vyvJVfsbvQH8BINZAQdW8otZBWfZCMJKnI3OTZBbOSVz9Jwz5TcLTYCNdjsemuMZD`;
+const token = `EAAPVWvQg1ZAcBADqkYwoOpKVyZCTZCZCM5R9xtYwsTnHt94ZB6b1ZBuhQ1SAhSwkqvsfRGqkDpfrqZAtJjUbiEERXITNgJYPV5ZB7ZCgZBEHYuKt3FHO6VZBQpSQDnBZAtDcQTPZAYMxrcg8H52oJbXZCh79Xhnvqr6hBPrLcnEH2aizKQz2kB9iBgpUyujWjl6EBHWGsZCfZBVOlXyGoU7dPyVAyQ5J`;
 console.log(`whatsapp token is :${token}`);
 
 // @todo setup env
@@ -27,8 +29,10 @@ export default async function (fastify, opts) {
     // Check the Incoming webhook message
     console.log(JSON.stringify(req.body, null, 2));
 
+    const {type} = req.body.entry[0].changes[0].value.messages[0];  // extracts the type of the message 
+
     // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
-    if (req.body.object) {
+    if (req.body.object) {   // check if the message is of the type text
       if (
         req.body.entry &&
         req.body.entry[0].changes &&
@@ -39,17 +43,32 @@ export default async function (fastify, opts) {
         const { phone_number_id: phoneNumberId } =
           req.body.entry[0].changes[0].value.metadata;
         const { from } = req.body.entry[0].changes[0].value.messages[0]; // extract the phone number from the webhook payload
-        const msgBody =
-          req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
+
+        let msgBody;
+        if(type === "text")
+          msgBody = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
+        else if(type === "button")
+          msgBody = req.body.entry[0].changes[0].value.messages[0].button.text; // extract the button text from the webhook payload
+
       (async () => {  
         
           if(await checkInitialState(from,db)) //Checking whether the contact is already saved in the database or not
             await initialState(from,db);
+            const currState = await db.findOne({ phone: `${from}` });
 
-            await runState(msgBody,db,from,phoneNumberId,token); // Runs the current state
-            const updatedState = await updateState(from,db);     // Updates the current state             
 
-       
+            if(currState.state === "buttons" && Number(msgBody) ){
+              await runIntegerState(msgBody,db,from,phoneNumberId,token); // Runs the current state
+            }
+            else if(currState.state === "buttons" && msgBody === "Logout"){
+              await logout(from,db);
+            }
+            else{
+              await runState(msgBody,db,from,phoneNumberId,token); // Runs the current state
+              await updateState(from,db);     // Updates the current state  
+            }
+
+                      
            
             //await clientClose(client);
         })()
@@ -60,8 +79,10 @@ export default async function (fastify, opts) {
         res.code(404);
       }
       return {};
+    } 
+  
     }
-  });
+  );
 
   // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
   // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests

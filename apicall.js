@@ -7,7 +7,6 @@ export function callAmizoneApi(user, pass) {
       password: `${pass}`,
     })
   );
-
   return api;
 }
 

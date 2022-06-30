@@ -1,5 +1,4 @@
-import connect from "./database.js";
-import { clientClose } from "./database.js";
+import connect, { clientClose } from "./database.js";
 
 // Storing database variable(db) and client from database.js so that we can close client
 
@@ -21,14 +20,12 @@ export async function storeUsername(user, phnNumber) {
       },
       { upsert: true }
     );
-    
+
     clientClose(client);
-
-
   } catch (err) {
     console.error(err);
     throw err;
-  } 
+  }
 }
 // Test Call
 storeUsername(23423, 8234525);
