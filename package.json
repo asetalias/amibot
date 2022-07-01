@@ -4,6 +4,7 @@
   "description": "This project was bootstrapped with Fastify-CLI.",
   "type": "module",
   "main": "app.js",
+  "types": "app.d.ts",
   "directories": {
     "test": "test"
   },
