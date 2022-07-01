@@ -1,7 +1,6 @@
 import * as mongo from "mongodb";
-// const { MongoClient, ServerApiVersion } = require("mongodb");
 
-export default async function connect() {
+export async function connect() {
   const uri =
     "mongodb+srv://amizonedb:Amizone123@cluster0.7m0ey.mongodb.net/?retryWrites=true&w=majority";
   const client = new mongo.MongoClient(uri, {
@@ -9,16 +8,10 @@ export default async function connect() {
     useUnifiedTopology: true,
     serverApi: mongo.ServerApiVersion.v1,
   });
-  try {
-    await client.connect();
-    const database = client.db("Amizone");
-    const db = database.collection("students");
-    console.log("Running Database...");
-    return [db, client];
-  } catch (e) {
-    console.log("Check database code");
-  }
-  return [null, null];
+  await client.connect();
+  const userCollection = client.db("Amizone").collection("students");
+  console.log("Running Database...");
+  return [client, userCollection];
 }
 
 export async function close(client) {

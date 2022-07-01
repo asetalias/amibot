@@ -1,17 +1,11 @@
 import "dotenv/config";
 import { checkInitialState, initialState } from "../initialstate.js";
-import connect from "../database.js";
 import { updateState } from "../updatestate.js";
 import { runState } from "../normalstate.js";
 import { runIntegerState } from "../integerstate.js";
 import { logout } from "../logout.js";
 import { runWelcome } from "../welcome.js";
 import { appIndividualRequest } from "../apprequest.js";
-
-// Initializing the database variable and the client
-const database = await connect();
-const db = database[0];
-const client = database[1];
 
 // Access token for your app
 // (copy token from DevX getting started page
@@ -23,11 +17,21 @@ console.log(`whatsapp token is :${token}`);
 const webhookVerificationToken = process.env.VERIFY_TOKEN;
 
 // Sets server port and logs message on success
+/**
+ * @param {App.Fastify} fastify
+ * @param {Object} opts
+ * @returns {Promise<void>}
+ */
 export default async function (fastify, opts) {
   // Accepts POST requests at /webhook endpoint
   fastify.post("/webhook", (req, res) => {
     // Check the Incoming webhook message
     console.log(JSON.stringify(req.body, null, 2));
+
+    const { /** @type {App.Collection} */ db } = opts;
+    if (db === undefined) {
+      throw new Error("db not injected!");
+    }
 
     const { type } = req.body.entry[0].changes[0].value.messages[0]; // extracts the type of the message
 
@@ -53,42 +57,39 @@ export default async function (fastify, opts) {
           msgBody = req.body.entry[0].changes[0].value.messages[0].button.text; // extract the button text from the webhook payload
 
         (async () => {
-          
-
           if (await checkInitialState(from, db))
-            //Checking whether the contact is already saved in the database or not
+            // Checking whether the contact is already saved in the database or not
             await initialState(from, db);
 
           const currState = await db.findOne({ phone: `${from}` });
 
           if (currState.state === "buttons" && Number(msgBody)) {
             await runIntegerState(msgBody, db, from, phoneNumberId, token); // Runs the Selection Menu
-          } 
-          
-          else if (currState.state == "welcome" ) {
-
-            if(msgBody.toLowerCase() == "start"){
-            await runWelcome(from, phoneNumberId, token);
-            await updateState(from, db); // Updates the current state
+          } else if (currState.state === "welcome") {
+            if (msgBody.toLowerCase() === "start") {
+              await runWelcome(from, phoneNumberId, token);
+              await updateState(from, db); // Updates the current state
+            } else {
+              appIndividualRequest(
+                phoneNumberId,
+                token,
+                from,
+                `Start the bot using "Start"`
+              );
             }
-            else {
-              appIndividualRequest(phoneNumberId,token,from,`Start the bot using "Start"`);
-            }
-        
-          } 
-          
-          else if (currState.state === "buttons" && msgBody === "Logout") {
+          } else if (currState.state === "buttons" && msgBody === "Logout") {
             await logout(from, db);
-            const logOutText = "Logout Successful..."
-            await appIndividualRequest(phoneNumberId, token, from, `*${logOutText}*`);
-          } 
-          
-          else {
+            const logOutText = "Logout Successful...";
+            await appIndividualRequest(
+              phoneNumberId,
+              token,
+              from,
+              `*${logOutText}*`
+            );
+          } else {
             await runState(msgBody, db, from, phoneNumberId, token); // Runs the current state
             await updateState(from, db); // Updates the current state
           }
-
-          //await clientClose(client);
         })();
 
         res.code(200);

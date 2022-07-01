@@ -11,10 +11,10 @@
       "warn",
       {},
       {
-        
+
         "usePrettierrc": true // Use .prettierrc file as source
       }
-    ], 
+    ],
     "no-unused-vars": "warn",
     "no-console": "off",
     "no-underscore-dangle": "off",
@@ -42,6 +42,7 @@
   "settings": {},
   "ignorePatterns": [
     "/public/",
-    "*.md"
+    "*.md",
+    "*.d.ts"
   ]
 }
