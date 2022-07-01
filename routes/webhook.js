@@ -5,6 +5,8 @@ import { updateState } from "../updatestate.js";
 import { runState } from "../normalstate.js";
 import { runIntegerState } from "../integerstate.js";
 import { logout } from "../logout.js";
+import { runWelcome } from "../welcome.js";
+import { appIndividualRequest } from "../apprequest.js";
 
 // Initializing the database variable and the client
 const database = await connect();
@@ -45,23 +47,43 @@ export default async function (fastify, opts) {
 
         let msgBody;
         if (type === "text")
-          msgBody =
-            req.body.entry[0].changes[0].value.messages[0].text
-              .body; // extract the message text from the webhook payload
+          msgBody = req.body.entry[0].changes[0].value.messages[0].text.body;
+        // extract the message text from the webhook payload
         else if (type === "button")
           msgBody = req.body.entry[0].changes[0].value.messages[0].button.text; // extract the button text from the webhook payload
 
         (async () => {
+          
+
           if (await checkInitialState(from, db))
             //Checking whether the contact is already saved in the database or not
             await initialState(from, db);
+
           const currState = await db.findOne({ phone: `${from}` });
 
           if (currState.state === "buttons" && Number(msgBody)) {
-            await runIntegerState(msgBody, db, from, phoneNumberId, token); // Runs the current state
-          } else if (currState.state === "buttons" && msgBody === "Logout") {
+            await runIntegerState(msgBody, db, from, phoneNumberId, token); // Runs the Selection Menu
+          } 
+          
+          else if (currState.state == "welcome" ) {
+
+            if(msgBody.toLowerCase() == "start"){
+            await runWelcome(from, phoneNumberId, token);
+            await updateState(from, db); // Updates the current state
+            }
+            else {
+              appIndividualRequest(phoneNumberId,token,from,`Start the bot using "Start"`);
+            }
+        
+          } 
+          
+          else if (currState.state === "buttons" && msgBody === "Logout") {
             await logout(from, db);
-          } else {
+            const logOutText = "Logout Successful..."
+            await appIndividualRequest(phoneNumberId, token, from, `*${logOutText}*`);
+          } 
+          
+          else {
             await runState(msgBody, db, from, phoneNumberId, token); // Runs the current state
             await updateState(from, db); // Updates the current state
           }

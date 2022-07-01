@@ -4,11 +4,11 @@ export async function runState(msgbody, db, from, phoneNumberId, token) {
   const currState = await db.findOne({ phone: `${from}` });
 
   switch (currState.state) {
-    case "welcome": {
-      await appTemplateRequest(phoneNumberId, token, from, "credentials"); // Send template credentials asking for the username and pass
-      await appTemplateRequest(phoneNumberId, token, from, "username");
-      break;
-    }
+    // case "welcome": {
+    //   await appTemplateRequest(phoneNumberId, token, from, "credentials"); // Send template credentials asking for the username and pass
+    //   await appTemplateRequest(phoneNumberId, token, from, "username");
+    //   break;
+    // }
 
     case "username": {
       await db.updateOne(
@@ -42,7 +42,14 @@ export async function runState(msgbody, db, from, phoneNumberId, token) {
 
     case "buttons": {
       if (msgbody === "Options") {
-        const text = `1.Attendance`;
+        //@todo Replace it with a template
+        const optionText = "Option Menu";
+        const text = `*${optionText}*
+
+1. Attendance
+2. Class Schedule
+3. Courses
+4. Main Menu`;
         appIndividualRequest(phoneNumberId, token, from, text);
       }
     }
