@@ -25,8 +25,8 @@ export async function appTemplateRequest(phnId, tkn, from, tempName) {
   );
 }
 
-export function appIndividualRequest(phoneNumberId, token, from, text) {
-  const url = axios({
+export async function appIndividualRequest(phoneNumberId, token, from, text) {
+  await axios({
     method: "POST", // method: "POST", // Required, HTTP method, a string, e.g. POST, GET
     url: `https://graph.facebook.com/v12.0/${phoneNumberId}/messages`,
 

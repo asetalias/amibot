@@ -2,7 +2,6 @@
 import "dotenv/config";
 import { checkInitialState,initialState } from "../initialstate.js";
 import connect from "../database.js"
-import {clientClose} from "../database.js";
 import { updateState } from "../updatestate.js";
 import { runState } from "../normalstate.js";
 import { runIntegerState } from "../integerstate.js";
@@ -16,7 +15,7 @@ const client = database[1];
 // Access token for your app
 // (copy token from DevX getting started page
 // and save it as environment variable into the .env file)
-const token = `EAAPVWvQg1ZAcBADqkYwoOpKVyZCTZCZCM5R9xtYwsTnHt94ZB6b1ZBuhQ1SAhSwkqvsfRGqkDpfrqZAtJjUbiEERXITNgJYPV5ZB7ZCgZBEHYuKt3FHO6VZBQpSQDnBZAtDcQTPZAYMxrcg8H52oJbXZCh79Xhnvqr6hBPrLcnEH2aizKQz2kB9iBgpUyujWjl6EBHWGsZCfZBVOlXyGoU7dPyVAyQ5J`;
+const token = `EAAPVWvQg1ZAcBAHrZC9sOykRskLeR9UYU2wsBn0ndKDFb4XaFZASknuRmjpTok5k8F6lBuBVUnJab1EzrwFK3yCkzo3HlfG75N2QmVqrSngOshVYsUqeGck33RlvtFFQifBIZAAImqSZAO87D3eZArDc3RDLXZCn7joXreXedI50dM22e22tYBMZACW9zGzW9diuhbZC6udjWZBlQXFw2KZCYB2bnUGecF01qgZD`;
 console.log(`whatsapp token is :${token}`);
 
 // @todo setup env
