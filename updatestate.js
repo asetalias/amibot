@@ -16,7 +16,7 @@ export async function updateState(phnNum, db) {
       case "pass":
         updatedState = "buttons";
         break;
-      default : 
+      default:
         updatedState = "buttons";
     }
 

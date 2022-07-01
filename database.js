@@ -16,10 +16,11 @@ export default async function connect() {
     console.log("Running Database...");
     return [db, client];
   } catch (e) {
-    console.log("Check datatbase code");
+    console.log("Check database code");
   }
+  return [null, null];
 }
 
-export async function clientClose(client) {
+export async function close(client) {
   await client.close();
 }

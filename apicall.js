@@ -9,4 +9,3 @@ export function callAmizoneApi(user, pass) {
   );
   return api;
 }
-

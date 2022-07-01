@@ -1,10 +1,8 @@
 export async function checkInitialState(phnNum, db) {
   const exists = await db.findOne({ phone: `${phnNum}` });
 
-  if (exists) 
-    return false; // Returns false if the database with corresponding contact number exists
-  else
-    return true; // Returns true if the database with corresponding contact number does not exits
+  if (exists) return false; // Returns false if the database with corresponding contact number exists
+  return true; // Returns true if the database with corresponding contact number does not exits
 }
 
 export async function initialState(phnNum, db) {

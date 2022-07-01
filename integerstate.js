@@ -12,7 +12,12 @@ export async function runIntegerState(msgbody, db, from, phoneNumberId, token) {
       try {
         const attendanceResponse = await api.amizoneServiceGetAttendance();
         console.log("status: ", attendanceResponse.status);
-        await displayAttendance(attendanceResponse.data, phoneNumberId, token, from);
+        await displayAttendance(
+          attendanceResponse.data,
+          phoneNumberId,
+          token,
+          from
+        );
       } catch (err) {
         console.log("something went wrong: ", err);
       }
