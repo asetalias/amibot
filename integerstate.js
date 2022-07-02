@@ -22,10 +22,10 @@ export async function runIntegerState(msgbody, db, from, phoneNumberId, token) {
       } catch (err) {
         console.log("something went wrong: ", err);
       }
-      
+
       break;
     }
-/*
+    /*
     case 2 :{
       try {
         const scheduleResponse = await api.amizoneServiceGetClassSchedule();
@@ -43,17 +43,18 @@ export async function runIntegerState(msgbody, db, from, phoneNumberId, token) {
 
     }
   */
-    
-    case 4 : break;
 
-    default:{
+    case 4:
+      break;
+
+    default: {
       const text = "Select the correct option!";
       await appIndividualRequest(phoneNumberId, token, from, `*${text}*`);
-      await runState("Options",db,from, phoneNumberId, token);
+      await runState("Options", db, from, phoneNumberId, token);
       errorMsg = 1;
     }
   }
 
-  if(errorMsg == 0)
+  if (errorMsg == 0)
     await appTemplateRequest(phoneNumberId, token, from, "button");
 }

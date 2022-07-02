@@ -5,6 +5,7 @@ import { runIntegerState } from "../integerstate.js";
 import { logout } from "../logout.js";
 import { runWelcome } from "../welcome.js";
 import { appIndividualRequest } from "../apprequest.js";
+import { parseWebhookPayload } from "../whatsapp-cloud-api/whatsapp-utils.js";
 
 const META_API_TOKEN = process.env.WHATSAPP_TOKEN;
 const WEBHOOK_VERIFICATION_TOKEN = process.env.VERIFY_TOKEN;
@@ -16,87 +17,77 @@ const WEBHOOK_VERIFICATION_TOKEN = process.env.VERIFY_TOKEN;
  */
 export default async function (fastify, opts) {
   // Accepts POST requests at /webhook endpoint
-  fastify.post("/webhook", (req, res) => {
+  fastify.post("/webhook", async (req, res) => {
     const { /** @type {App.Collection} */ db } = opts;
     if (db === undefined) {
       throw new Error("db not injected!");
     }
 
-    const { type } = req.body.entry[0].changes[0].value.messages[0]; // extracts the type of the message
+    const payload = parseWebhookPayload(req.body);
+
+    if (payload.subject !== "whatsapp_business_account") {
+      res.code(404);
+      return {};
+    }
+
+    if (!payload.textBody && !payload.button) {
+      // @todo respond with an "invalid message" response
+      res.code(404);
+      return {};
+    }
 
     // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
-    if (req.body.object) {
-      // check if the message is of the type text
-      if (
-        req.body.entry &&
-        req.body.entry[0].changes &&
-        req.body.entry[0].changes[0] &&
-        req.body.entry[0].changes[0].value.messages &&
-        req.body.entry[0].changes[0].value.messages[0]
-      ) {
-        const { phone_number_id: phoneNumberId } =
-          req.body.entry[0].changes[0].value.metadata;
-        const { from } = req.body.entry[0].changes[0].value.messages[0]; // extract the phone number from the webhook payload
+    // check if the message is of the type text
+    if (await checkInitialState(payload.sender, db))
+      // Checking whether the contact is already saved in the database or not
+      await initialState(payload.sender, db);
 
-        let msgBody;
-        if (type === "text")
-          msgBody = req.body.entry[0].changes[0].value.messages[0].text.body;
-        // extract the message text from the webhook payload
-        else if (type === "button")
-          msgBody = req.body.entry[0].changes[0].value.messages[0].button.text; // extract the button text from the webhook payload
+    const currState = await db.findOne({ phone: payload.sender });
 
-        (async () => {
-          if (await checkInitialState(from, db))
-            // Checking whether the contact is already saved in the database or not
-            await initialState(from, db);
-
-          const currState = await db.findOne({ phone: `${from}` });
-
-          if (currState.state === "buttons" && Number(msgBody)) {
-            await runIntegerState(
-              msgBody,
-              db,
-              from,
-              phoneNumberId,
-              META_API_TOKEN
-            ); // Runs the Selection Menu
-          } else if (currState.state === "welcome") {
-            if (msgBody.toLowerCase() === "start") {
-              await runWelcome(from, phoneNumberId, META_API_TOKEN);
-              await updateState(from, db); // Updates the current state
-            } else {
-              appIndividualRequest(
-                phoneNumberId,
-                META_API_TOKEN,
-                from,
-                `Start the bot using "Start"`
-              );
-            }
-          } else if (currState.state === "buttons" && msgBody === "Logout") {
-            await logout(from, db);
-            const logOutText = "Logout Successful...";
-            await appIndividualRequest(
-              phoneNumberId,
-              META_API_TOKEN,
-              from,
-              `*${logOutText}*`
-            );
-          } else {
-            await runState(msgBody, db, from, phoneNumberId, META_API_TOKEN); // Runs the current state
-            await updateState(from, db); // Updates the current state
-          }
-        })();
-
-        res.code(200);
+    if (currState.state === "buttons" && Number(payload.textBody)) {
+      await runIntegerState(
+        payload.button.text,
+        db,
+        payload.sender,
+        payload.botNumberId,
+        META_API_TOKEN
+      ); // Runs the Selection Menu
+    } else if (currState.state === "welcome") {
+      if (payload.textBody.toLowerCase() === "start") {
+        await runWelcome(payload.sender, payload.botNumberId, META_API_TOKEN);
+        await updateState(payload.sender, db); // Updates the current state
       } else {
-        // Return a '404 Not Found' if event is not from a WhatsApp API
-        res.code(404);
+        await appIndividualRequest(
+          payload.botNumberId,
+          META_API_TOKEN,
+          payload.sender,
+          `Start the bot using "Start"`
+        );
       }
+    } else if (currState.state === "buttons" && payload.textBody === "Logout") {
+      await logout(payload.sender, db);
+      const logOutText = "Logout Successful...";
+      await appIndividualRequest(
+        payload.botNumberId,
+        META_API_TOKEN,
+        payload.sender,
+        `*${logOutText}*`
+      );
+    } else {
+      await runState(
+        payload.textBody,
+        db,
+        payload.sender,
+        payload.botNumberId,
+        META_API_TOKEN
+      ); // Runs the current state
+      await updateState(payload.sender, db); // Updates the current state
     }
+    res.code(200);
     return {};
   });
 
-  // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
+  // Accepts GET requests at the /webhook endpoint. You need this URL to set up webhook initially.
   // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
   fastify.get("/webhook", (req, res) => {
     // Parse params from the webhook verification request

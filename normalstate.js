@@ -40,9 +40,9 @@ export async function runState(msgbody, db, from, phoneNumberId, token) {
       break;
     }
 
-    case "buttons": {
+    case "buttons":
       if (msgbody === "Options") {
-        //@todo Replace it with a template
+        // @todo Replace it with a template
         const optionText = "Option Menu";
         const text = `*${optionText}*
 
@@ -50,8 +50,11 @@ export async function runState(msgbody, db, from, phoneNumberId, token) {
 2. Class Schedule
 3. Courses
 4. Main Menu`;
-        appIndividualRequest(phoneNumberId, token, from, text);
+        await appIndividualRequest(phoneNumberId, token, from, text);
       }
-    }
+      break;
+
+    default:
+      console.error("invalid user state!");
   }
 }
