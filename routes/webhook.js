@@ -1,11 +1,6 @@
-import { checkInitialState, initialState } from "../initialstate.js";
-import { updateState } from "../updatestate.js";
-import { runState } from "../normalstate.js";
-import { runIntegerState } from "../integerstate.js";
-import { logout } from "../logout.js";
-import { runWelcome } from "../welcome.js";
-import { appIndividualRequest } from "../apprequest.js";
-import { parseWebhookPayload } from "../whatsapp-cloud-api/whatsapp-utils.js";
+import { getUser, updateUser } from "../persist.js";
+import handler from "../states/handler.js";
+import { parseWebhookPayload, WhatsappApiClient } from "../whatsapp.js";
 
 const META_API_TOKEN = process.env.WHATSAPP_TOKEN;
 const WEBHOOK_VERIFICATION_TOKEN = process.env.VERIFY_TOKEN;
@@ -30,58 +25,27 @@ export default async function (fastify, opts) {
       return {};
     }
 
-    if (!payload.textBody && !payload.button) {
+    if (!payload.textBody && !payload.button.text) {
       // @todo respond with an "invalid message" response
-      res.code(404);
+      res.code(200);
       return {};
     }
 
-    // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
-    // check if the message is of the type text
-    if (await checkInitialState(payload.sender, db))
-      // Checking whether the contact is already saved in the database or not
-      await initialState(payload.sender, db);
+    const [exists, user] = await getUser(payload.sender, db);
+    if (!exists) {
+      console.log("new user!"); // @todo remove log
+    }
 
-    const currState = await db.findOne({ phone: payload.sender });
+    const context = {
+      db,
+      bot: new WhatsappApiClient(META_API_TOKEN, payload.botNumberId),
+      payload,
+      user,
+    };
 
-    if (currState.state === "buttons" && Number(payload.textBody)) {
-      await runIntegerState(
-        payload.button.text,
-        db,
-        payload.sender,
-        payload.botNumberId,
-        META_API_TOKEN
-      ); // Runs the Selection Menu
-    } else if (currState.state === "welcome") {
-      if (payload.textBody.toLowerCase() === "start") {
-        await runWelcome(payload.sender, payload.botNumberId, META_API_TOKEN);
-        await updateState(payload.sender, db); // Updates the current state
-      } else {
-        await appIndividualRequest(
-          payload.botNumberId,
-          META_API_TOKEN,
-          payload.sender,
-          `Start the bot using "Start"`
-        );
-      }
-    } else if (currState.state === "buttons" && payload.textBody === "Logout") {
-      await logout(payload.sender, db);
-      const logOutText = "Logout Successful...";
-      await appIndividualRequest(
-        payload.botNumberId,
-        META_API_TOKEN,
-        payload.sender,
-        `*${logOutText}*`
-      );
-    } else {
-      await runState(
-        payload.textBody,
-        db,
-        payload.sender,
-        payload.botNumberId,
-        META_API_TOKEN
-      ); // Runs the current state
-      await updateState(payload.sender, db); // Updates the current state
+    const updatedUser = await handler(context);
+    if (!exists || updatedUser.state !== user.state) {
+      await updateUser(updatedUser, db);
     }
     res.code(200);
     return {};
