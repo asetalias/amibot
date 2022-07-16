@@ -1,6 +1,6 @@
 import * as amizone from "amizone_api";
 import { states } from "./states.js";
-import { renderAttendance, renderOptionsMenu } from "./render-messages.js";
+import { renderAttendance, renderOptionsMenu, renderSemester } from "./render-messages.js";
 
 /**
  * @param {string} username
@@ -15,7 +15,7 @@ const validateAmizoneCredentials = async (username, password) => {
     })
   );
   try {
-    await amizoneClient.amizoneServiceGetAttendance();
+    await amizoneClient.amizoneServiceGetSemesters();
     return true;
   } catch (e) {
     return false;
@@ -31,7 +31,7 @@ export const handleNewUser = async (ctx) => {
   const updatedUser = structuredClone(ctx.user);
   const message = payload.textBody;
   if (message?.toLowerCase() === "start") {
-    await ctx.bot.sendTemplate(payload.sender, "credentials");
+    await ctx.bot.sendTemplate(payload.sender, "welcome");
     await ctx.bot.sendTemplate(payload.sender, "username");
     updatedUser.state = states.EXPECT_USERNAME;
     return updatedUser;
@@ -97,6 +97,8 @@ const newAmizoneClient = (ctx) => {
 
 const loggedInOptions = {
   GET_ATTENDANCE: "1",
+  GET_SEMESTERS: "4",
+  GET_MENU: "5",
 };
 
 /**
@@ -117,6 +119,29 @@ const optionsMap = new Map([
       }
     },
   ],
+  [
+    loggedInOptions.GET_SEMESTERS,
+    async (ctx) => {
+      try {
+        const semesters = await newAmizoneClient(
+          ctx
+        ).amizoneServiceGetSemesters();
+        console.log(semesters.data)
+        return [true, renderSemester(semesters.data)];
+      } catch (err) {
+        // catch invalid credential?
+        return [false, ""];
+      }
+    },
+  ],
+  [
+    loggedInOptions.GET_MENU,
+    async (ctx) => {
+      await ctx.bot.sendTemplate(ctx.payload.sender, "button").catch(
+        (err) => console.log(err)
+      )
+    },
+  ]
 ]);
 
 /**
@@ -136,19 +161,23 @@ export const handleLoggedIn = async (ctx) => {
     case "logout":
       updatedUser.amizoneCredentials = { username: "", password: "" };
       updatedUser.state = states.NEW_USER;
-      await ctx.bot.sendMessage(payload.sender, "logged out!");
+      await ctx.bot.sendMessage(payload.sender, "Logged Out!");
       return updatedUser;
     default:
       if (optionsMap.has(message)) {
         const [success, text] = await optionsMap.get(message)(ctx);
         if (success) {
           await ctx.bot.sendMessage(payload.sender, text);
+          await ctx.bot.sendTemplate(ctx.payload.sender, "button");
           return updatedUser;
         }
         await ctx.bot.sendMessage(
           payload.sender,
           "unsuccessful. maybe try logging in again?"
         );
+        await ctx.bot.sendTemplate(payload.sender, "username");
+        updatedUser.state = states.EXPECT_USERNAME;
+        return updatedUser;
       }
       return updatedUser;
   }

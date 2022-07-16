@@ -26,7 +26,7 @@ export class WhatsappApiClient {
    * @param {string} language
    * @returns {Promise<void>}
    */
-  async sendTemplate(to, template, language = "en_us") {
+  async sendTemplate(to, template, language = "en") { // Changed from en_us to en
     await this._send(to, "template", {
       name: template,
       language: {

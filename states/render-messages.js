@@ -7,6 +7,8 @@ export const renderOptionsMenu = () => `
   1. Attendance
   2. Class Schedule
   3. Courses
+  4. Semesters
+  5. Menu
   `;
 
 /**
@@ -25,6 +27,20 @@ export const renderAttendance = (attendance) => {
       record.attendance.held,
       record.attendance.attended
     )}%)
+
+`;
+  }
+  return text;
+};
+
+export const renderSemester = (semesters) => {
+  let text = "";
+  text = `*Current Semester*:${semesters.semesters[0].name}
+
+`;
+  for (let i = 1; i < semesters.semesters.length; i += 1) {
+    const record = semesters.semesters[i];
+    text += `*Semester* :${record.name} 
 
 `;
   }
