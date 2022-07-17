@@ -1,6 +1,6 @@
 import * as amizone from "amizone_api";
 import { states } from "./states.js";
-import { renderAttendance, renderOptionsMenu, renderSemester } from "./render-messages.js";
+import { renderAttendance, renderOptionsMenu, renderSemester, renderSchedule } from "./render-messages.js";
 
 /**
  * @param {string} username
@@ -78,6 +78,7 @@ export const handlePassword = async (ctx) => {
   );
   updatedUser.amizoneCredentials.username = null;
   updatedUser.state = states.EXPECT_USERNAME;
+  await ctx.bot.sendTemplate(payload.sender, "username");
   return updatedUser;
 };
 
@@ -97,11 +98,15 @@ const newAmizoneClient = (ctx) => {
 
 const loggedInOptions = {
   GET_ATTENDANCE: "1",
+  GET_SCHEDULE: "2",
+  GET_COURSES: "3",
   GET_SEMESTERS: "4",
   GET_MENU: "5",
 };
 
 /**
+ * Map enumerated menu options to handlers that return a boolean to indicate success and a string
+ * that is rendered to the client.
  * @type {Map<string, (BotHandlerContext) => Promise<[boolean, string]>>}
  */
 const optionsMap = new Map([
@@ -113,6 +118,21 @@ const optionsMap = new Map([
           ctx
         ).amizoneServiceGetAttendance();
         return [true, renderAttendance(attendance.data)];
+      } catch (err) {
+        // catch invalid credential?
+        return [false, ""];
+      }
+    },
+  ],
+  [
+    loggedInOptions.GET_SCHEDULE,
+    async (ctx) => {
+      try {
+        const schedule = await newAmizoneClient(
+          ctx
+        ).amizoneServiceGetClassSchedule(2022,7,18); //@todo add date feature
+         console.log(schedule.data);
+        return [true, renderSchedule(schedule.data)];
       } catch (err) {
         // catch invalid credential?
         return [false, ""];
@@ -137,9 +157,7 @@ const optionsMap = new Map([
   [
     loggedInOptions.GET_MENU,
     async (ctx) => {
-      await ctx.bot.sendTemplate(ctx.payload.sender, "button").catch(
-        (err) => console.log(err)
-      )
+      return [true, ""]
     },
   ]
 ]);

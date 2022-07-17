@@ -33,6 +33,24 @@ export const renderAttendance = (attendance) => {
   return text;
 };
 
+export const renderSchedule = (schedule) => {
+  let text = "";
+  text = `*------ Date: ${schedule.classes[0].startTime.substr(0,10)} ------*
+  
+`
+  for (let i = 0; i < schedule.classes.length; i += 1) {
+    const record = schedule.classes[i];
+    text += `*Course* :${record.course.name} 
+*Faculty Name* :${record.faculty}
+*Room* :${record.room}
+*Time* :${record.startTime.substr(11,5)} - ${record.endTime.substr(11,5)}
+
+`;
+  }
+  return text;
+};
+
+
 export const renderSemester = (semesters) => {
   let text = "";
   text = `*Current Semester*:${semesters.semesters[0].name}
