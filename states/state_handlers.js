@@ -128,9 +128,11 @@ const optionsMap = new Map([
     loggedInOptions.GET_SCHEDULE,
     async (ctx) => {
       try {
+        const { payload } = ctx;
+        await ctx.bot.sendList(payload.sender);
         const schedule = await newAmizoneClient(
           ctx
-        ).amizoneServiceGetClassSchedule(2022,7,18); //@todo add date feature
+        ).amizoneServiceGetClassSchedule(2022,7,19); //@todo add date feature
          console.log(schedule.data);
         return [true, renderSchedule(schedule.data)];
       } catch (err) {
