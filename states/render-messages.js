@@ -22,7 +22,7 @@ export const renderAttendance = (attendance) => {
   const toPercent = (total, went) => ((went * 100) / total).toFixed(2);
   for (let i = 0; i < attendance.records.length; i += 1) {
     const record = attendance.records[i];
-    text += `Course: ${record.Course.name} | Code: ${record.Course.code}
+    text += `*Course*: ${record.Course.name} *| Code*: ${record.Course.code}
   => ${record.attendance.attended}/${record.attendance.held} (${toPercent(
       record.attendance.held,
       record.attendance.attended

@@ -1,6 +1,13 @@
 import * as amizone from "amizone_api";
 import { states } from "./states.js";
-import { renderAttendance, renderOptionsMenu, renderSemester, renderSchedule } from "./render-messages.js";
+import {
+  renderAttendance,
+  renderOptionsMenu,
+  renderSemester,
+  renderSchedule,
+} from "./render-messages.js";
+import { updateUser } from "../persist.js";
+import { firstNonEmpty } from "../utils.js";
 
 /**
  * @param {string} username
@@ -127,18 +134,13 @@ const optionsMap = new Map([
   [
     loggedInOptions.GET_SCHEDULE,
     async (ctx) => {
-      try {
-        const { payload } = ctx;
-        await ctx.bot.sendList(payload.sender);
-        const schedule = await newAmizoneClient(
-          ctx
-        ).amizoneServiceGetClassSchedule(2022,7,19); //@todo add date feature
-         console.log(schedule.data);
-        return [true, renderSchedule(schedule.data)];
-      } catch (err) {
-        // catch invalid credential?
-        return [false, ""];
-      }
+      // const schedule = await newAmizoneClient(
+      //   ctx
+      // ).amizoneServiceGetClassSchedule(2022,7,19); //@todo add date feature
+      //  console.log(schedule.data);
+      // return [true, renderSchedule(schedule.data)];
+      // updatedUser.state = states.USE_DATE;
+      return [true, "list"];
     },
   ],
   [
@@ -148,7 +150,7 @@ const optionsMap = new Map([
         const semesters = await newAmizoneClient(
           ctx
         ).amizoneServiceGetSemesters();
-        console.log(semesters.data)
+        console.log(semesters.data);
         return [true, renderSemester(semesters.data)];
       } catch (err) {
         // catch invalid credential?
@@ -159,9 +161,9 @@ const optionsMap = new Map([
   [
     loggedInOptions.GET_MENU,
     async (ctx) => {
-      return [true, ""]
+      return [true, ""];
     },
-  ]
+  ],
 ]);
 
 /**
@@ -171,7 +173,7 @@ const optionsMap = new Map([
  */
 export const handleLoggedIn = async (ctx) => {
   const { payload } = ctx;
-  const message = payload.button.text ?? payload.textBody;
+  const message = firstNonEmpty(payload.button.text, payload.textBody);
   const updatedUser = structuredClone(ctx.user);
 
   switch (message.toLowerCase()) {
@@ -187,8 +189,14 @@ export const handleLoggedIn = async (ctx) => {
       if (optionsMap.has(message)) {
         const [success, text] = await optionsMap.get(message)(ctx);
         if (success) {
-          await ctx.bot.sendMessage(payload.sender, text);
-          await ctx.bot.sendTemplate(ctx.payload.sender, "button");
+          if (text === "list") {
+            await ctx.bot.sendList(payload.sender);
+            updatedUser.state = states.USE_DATE;
+          } else {
+            await ctx.bot.sendMessage(payload.sender, text);
+            await ctx.bot.sendTemplate(ctx.payload.sender, "button");
+          }
+
           return updatedUser;
         }
         await ctx.bot.sendMessage(
@@ -202,4 +210,28 @@ export const handleLoggedIn = async (ctx) => {
       return updatedUser;
   }
   // @todo queries
+};
+
+export const handleUseDate = async (ctx) => {
+  const { payload } = ctx;
+  const message = firstNonEmpty(payload.interactive.title, payload.textBody);
+  const updatedUser = structuredClone(ctx.user);
+  if (Date.parse(message)) {
+    try {
+      const date = message.split("-");
+      console.log(date[0]);
+      const schedule = await newAmizoneClient(
+        ctx
+      ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); //@todo add date feature
+      console.log(schedule.data);
+      // send message here
+      await ctx.bot.sendMessage(payload.sender, renderSchedule(schedule.data));
+      await ctx.bot.sendTemplate(ctx.payload.sender, "button");
+      updatedUser.state = states.LOGGED_IN;
+    } catch (err) {
+      // catch invalid credential?
+      console.error(`error while processing req: ${err}`)
+    }
+    return updatedUser;
+  }
 };

@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const API_VERSION = "v12.0";
 const API_BASE_URL = `https://graph.facebook.com`;
 
@@ -27,7 +26,8 @@ export class WhatsappApiClient {
    * @param {string} language
    * @returns {Promise<void>}
    */
-  async sendTemplate(to, template, language = "en") { // Changed from en_us to en
+  async sendTemplate(to, template, language = "en") {
+    // Changed from en_us to en
     await this._send(to, "template", {
       name: template,
       language: {
@@ -47,7 +47,7 @@ export class WhatsappApiClient {
     });
   }
 
-  async sendList(to){
+  async sendList(to) {
     const date = new Date();
     let date0 = getDate(date);
     date.setDate(date.getDate() + 1);
@@ -57,42 +57,41 @@ export class WhatsappApiClient {
     date.setDate(date.getDate() + 1);
     let date3 = getDate(date);
 
-    await this._send(to,"interactive",{
-      
-        type: "list",
-        header: {
-            type: "text",
-            text: "Date Selection"
-        },
-        body: {
-            text: "Select the Date"
-        },
-        action: {
-            button: "Options",
-            sections: [
-                {
-                    title: "Dates",
-                    rows: [
-                        {
-                            id: "1",
-                            title: `${date0[2]}-${date0[1]}-${date0[0]}`,
-                        },
-                        {
-                            id: "2",
-                            title: `${date1[2]}-${date1[1]}-${date1[0]}`,
-                        },
-                        {
-                            id: "3",
-                            title: `${date2[2]}-${date2[1]}-${date2[0]}`,
-                        },
-                        {
-                            id: "4",
-                            title: `${date3[2]}-${date3[1]}-${date3[0]}`,
-                        }
-                    ]
-                },
-            ]
-        }
+    await this._send(to, "interactive", {
+      type: "list",
+      header: {
+        type: "text",
+        text: "Date Selection",
+      },
+      body: {
+        text: "Select the Date",
+      },
+      action: {
+        button: "Options",
+        sections: [
+          {
+            title: "Dates",
+            rows: [
+              {
+                id: "1",
+                title: `${date0[2]}-${date0[1]}-${date0[0]}`,
+              },
+              {
+                id: "2",
+                title: `${date1[2]}-${date1[1]}-${date1[0]}`,
+              },
+              {
+                id: "3",
+                title: `${date2[2]}-${date2[1]}-${date2[0]}`,
+              },
+              {
+                id: "4",
+                title: `${date3[2]}-${date3[1]}-${date3[0]}`,
+              },
+            ],
+          },
+        ],
+      },
     });
   }
 
@@ -125,10 +124,7 @@ export class WhatsappApiClient {
         console.log("something went wrong while posting to meta api:", err)
       );
   }
-
 }
-
-
 
 /**
  * @param {Object} body
@@ -151,10 +147,27 @@ export const parseWebhookPayload = (body) => {
     },
   ] = arraySafe(changes);
   const [
-    { from: sender, type: eventType, text: textObject, button: buttonObject },
+    {
+      from: sender,
+      type: eventType,
+      text: textObject,
+      button: buttonObject,
+      interactive: interactiveObject,
+    },
   ] = arraySafe(messages);
   const { body: textBody } = objectSafe(textObject);
   const { payload: buttonPayload, text: buttonText } = objectSafe(buttonObject);
+  const {
+    type: interactiveType,
+    button_reply: buttonReply,
+    list_reply: listReply,
+  } = objectSafe(interactiveObject);
+  const { title: interactiveTitle, description: interactiveDescription } =
+    interactiveType == "button"
+      ? buttonReply
+      : interactiveType == "list"
+      ? listReply
+      : {};
 
   return {
     subject,
@@ -162,17 +175,23 @@ export const parseWebhookPayload = (body) => {
     botNumberId,
     sender,
     eventType,
-    textBody,
+    // messageType: messageType ?? "",
+    textBody: textBody ?? "",
+    interactive: {
+      type: interactiveType ?? "",
+      title: interactiveTitle ?? "",
+      description: interactiveDescription ?? "",
+    },
     button: {
-      payload: buttonPayload,
-      text: buttonText,
+      payload: buttonPayload ?? "",
+      text: buttonText ?? "",
     },
   };
 };
 
-function getDate(date){
+function getDate(date) {
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
-  return[day,month,year]
+  return [day, month, year];
 }

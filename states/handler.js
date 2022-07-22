@@ -9,6 +9,7 @@ const handlerMap = new Map([
   [states.EXPECT_USERNAME, handlers.handleUsername],
   [states.EXPECT_PASSWORD, handlers.handlePassword],
   [states.LOGGED_IN, handlers.handleLoggedIn],
+  [states.USE_DATE, handlers.handleUseDate],
 ]);
 
 /**
