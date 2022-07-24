@@ -1,4 +1,5 @@
 import axios from "axios";
+import { renderRelativeDate } from "./utils.js";
 
 const API_VERSION = "v12.0";
 const API_BASE_URL = `https://graph.facebook.com`;
@@ -48,14 +49,10 @@ export class WhatsappApiClient {
   }
 
   async sendList(to) {
-    const date = new Date();
-    let date0 = getDate(date);
-    date.setDate(date.getDate() + 1);
-    let date1 = getDate(date);
-    date.setDate(date.getDate() + 1);
-    let date2 = getDate(date);
-    date.setDate(date.getDate() + 1);
-    let date3 = getDate(date);
+    const dates = new Array(5);
+    for (let i = 0; i < 5; i += 1) {
+      dates[i] = renderRelativeDate(i - 2);
+    }
 
     await this._send(to, "interactive", {
       type: "list",
@@ -71,24 +68,10 @@ export class WhatsappApiClient {
         sections: [
           {
             title: "Dates",
-            rows: [
-              {
-                id: "1",
-                title: `${date0[2]}-${date0[1]}-${date0[0]}`,
-              },
-              {
-                id: "2",
-                title: `${date1[2]}-${date1[1]}-${date1[0]}`,
-              },
-              {
-                id: "3",
-                title: `${date2[2]}-${date2[1]}-${date2[0]}`,
-              },
-              {
-                id: "4",
-                title: `${date3[2]}-${date3[1]}-${date3[0]}`,
-              },
-            ],
+            rows: dates.map((dateString, index) => ({
+              id: index + 1,
+              title: dateString,
+            })),
           },
         ],
       },
@@ -97,7 +80,7 @@ export class WhatsappApiClient {
 
   /**
    * @param {string} to
-   * @param {"text"|"template"} type
+   * @param {"text"|"template"|"interactive"} type
    * @param {object} value
    * @returns {Promise<void>}
    * @private
@@ -162,20 +145,31 @@ export const parseWebhookPayload = (body) => {
     button_reply: buttonReply,
     list_reply: listReply,
   } = objectSafe(interactiveObject);
+
+  const interactiveElement = (() => {
+    if (interactiveType === "button") {
+      return buttonReply;
+    }
+    if (interactiveType === "list_reply") {
+      return listReply;
+    }
+    if (eventType === "interactive") {
+      console.error(
+        "invalid interactive element in payload: ",
+        interactiveType
+      );
+    }
+    return {};
+  })();
   const { title: interactiveTitle, description: interactiveDescription } =
-    interactiveType == "button"
-      ? buttonReply
-      : interactiveType == "list"
-      ? listReply
-      : {};
+    interactiveElement;
 
   return {
     subject,
     originService,
+    eventType,
     botNumberId,
     sender,
-    eventType,
-    // messageType: messageType ?? "",
     textBody: textBody ?? "",
     interactive: {
       type: interactiveType ?? "",
@@ -188,10 +182,3 @@ export const parseWebhookPayload = (body) => {
     },
   };
 };
-
-function getDate(date) {
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
-  return [day, month, year];
-}

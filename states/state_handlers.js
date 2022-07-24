@@ -6,7 +6,6 @@ import {
   renderSemester,
   renderSchedule,
 } from "./render-messages.js";
-import { updateUser } from "../persist.js";
 import { firstNonEmpty } from "../utils.js";
 
 /**
@@ -133,15 +132,15 @@ const optionsMap = new Map([
   ],
   [
     loggedInOptions.GET_SCHEDULE,
-    async (ctx) => {
+    async (ctx) =>
       // const schedule = await newAmizoneClient(
       //   ctx
       // ).amizoneServiceGetClassSchedule(2022,7,19); //@todo add date feature
       //  console.log(schedule.data);
       // return [true, renderSchedule(schedule.data)];
       // updatedUser.state = states.USE_DATE;
-      return [true, "list"];
-    },
+      // @todo do things the right way: factor out the "list" response.
+      [true, "list"],
   ],
   [
     loggedInOptions.GET_SEMESTERS,
@@ -158,12 +157,7 @@ const optionsMap = new Map([
       }
     },
   ],
-  [
-    loggedInOptions.GET_MENU,
-    async (ctx) => {
-      return [true, ""];
-    },
-  ],
+  [loggedInOptions.GET_MENU, async (ctx) => [true, ""]],
 ]);
 
 /**
@@ -222,16 +216,27 @@ export const handleUseDate = async (ctx) => {
       console.log(date[0]);
       const schedule = await newAmizoneClient(
         ctx
-      ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); //@todo add date feature
-      console.log(schedule.data);
+      ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
+      console.log("fetched scheduled: ", schedule.data); // @todo remove
       // send message here
-      await ctx.bot.sendMessage(payload.sender, renderSchedule(schedule.data));
+      if (schedule.data.classes.length > 0) {
+        await ctx.bot.sendMessage(
+          payload.sender,
+          renderSchedule(schedule.data)
+        );
+      } else {
+        await ctx.bot.sendMessage(payload.sender, "no schedule available.");
+      }
       await ctx.bot.sendTemplate(ctx.payload.sender, "button");
       updatedUser.state = states.LOGGED_IN;
     } catch (err) {
       // catch invalid credential?
-      console.error(`error while processing req: ${err}`)
+      console.error(`error while processing req: ${err}`);
     }
     return updatedUser;
   }
+  await ctx.bot
+    .sendMessage(ctx.payload.sender, "invalid date!")
+    .catch((err) => console.error("failed to send message to WA: ", err));
+  return updatedUser;
 };

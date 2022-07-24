@@ -2,7 +2,6 @@ interface Payload {
   subject: string;
   originService: string;
   eventType: string;
-  messageType: string
   sender: string;
   botNumberId: string;
   textBody: string;

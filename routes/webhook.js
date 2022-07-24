@@ -25,7 +25,11 @@ export default async function (fastify, opts) {
       return {};
     }
 
-    if (!payload.textBody && !payload.button.text) {
+    if (
+      !payload.textBody &&
+      !payload.button.text &&
+      !payload.interactive.type
+    ) {
       // @todo respond with an "invalid message" response
       res.code(200);
       return {};
