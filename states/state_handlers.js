@@ -103,11 +103,11 @@ const newAmizoneClient = (ctx) => {
 };
 
 const loggedInOptions = {
-  GET_ATTENDANCE: "1",
-  GET_SCHEDULE: "2",
-  GET_COURSES: "3",
-  GET_SEMESTERS: "4",
-  GET_MENU: "5",
+  GET_ATTENDANCE: "Attendance",
+  GET_SCHEDULE: "Class Schedule",
+  GET_COURSES: "Courses",
+  GET_SEMESTERS: "Semesters",
+  GET_MENU: "Menu",
 };
 
 /**
@@ -167,12 +167,13 @@ const optionsMap = new Map([
  */
 export const handleLoggedIn = async (ctx) => {
   const { payload } = ctx;
-  const message = firstNonEmpty(payload.button.text, payload.textBody);
+  const message = firstNonEmpty(payload.button.text, payload.textBody, payload.interactive.title);
   const updatedUser = structuredClone(ctx.user);
 
   switch (message.toLowerCase()) {
     case "options":
-      await ctx.bot.sendMessage(payload.sender, renderOptionsMenu());
+       await ctx.bot.sendOptionList(payload.sender);
+      // await ctx.bot.sendMessage(payload.sender,renderOptionsMenu());
       return updatedUser;
     case "logout":
       updatedUser.amizoneCredentials = { username: "", password: "" };
@@ -184,7 +185,7 @@ export const handleLoggedIn = async (ctx) => {
         const [success, text] = await optionsMap.get(message)(ctx);
         if (success) {
           if (text === "list") {
-            await ctx.bot.sendList(payload.sender);
+            await ctx.bot.sendDateList(payload.sender);
             updatedUser.state = states.USE_DATE;
           } else {
             await ctx.bot.sendMessage(payload.sender, text);

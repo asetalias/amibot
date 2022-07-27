@@ -48,10 +48,10 @@ export class WhatsappApiClient {
     });
   }
 
-  async sendList(to) {
+  async sendDateList(to) {
     const dates = new Array(5);
     for (let i = 0; i < 5; i += 1) {
-      dates[i] = renderRelativeDate(i - 2);
+      dates[i] = renderRelativeDate(i-2);
     }
 
     await this._send(to, "interactive", {
@@ -76,6 +76,49 @@ export class WhatsappApiClient {
         ],
       },
     });
+  }
+
+async sendOptionList(to){
+    await this._send(to, "interactive",{
+      type: "list",
+      header: {
+        type: "text",
+        text: "Options Menu",
+      },
+      body: {
+        text: "Select the Options",
+      },
+      action: {
+        button: "Options",
+        sections: [
+          {
+            title: "Options",
+            rows: [
+              {
+                id: "1",
+                title: "Attendance",
+              },
+              {
+                id: "2",
+                title: "Class Schedule",
+              },
+              {
+                id: "3",
+                title: "Courses",
+              },
+              {
+                id: "4",
+                title: "Semesters",
+              },
+              {
+                id: "5",
+                title: "Main Menu",
+              },
+            ]
+          }
+        ]
+      }
+    })
   }
 
   /**
