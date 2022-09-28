@@ -1,0 +1,13 @@
+# environments variables ://
+.env
+
+# deps
+node_modules
+
+# git
+.git
+
+# IDE
+/.vscode
+.code
+/.idea
