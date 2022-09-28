@@ -48,10 +48,19 @@ export class WhatsappApiClient {
     });
   }
 
+  /**
+   * 
+   * @param {string} to 
+   * @param {object} message 
+   */
+  async sendInteractiveMessage(to, message) {
+    await this._send(to, "interactive", message);
+  }
+
   async sendDateList(to) {
     const dates = new Array(5);
     for (let i = 0; i < 5; i += 1) {
-      dates[i] = renderRelativeDate(i-2);
+      dates[i] = renderRelativeDate(i - 2);
     }
 
     await this._send(to, "interactive", {
@@ -78,48 +87,48 @@ export class WhatsappApiClient {
     });
   }
 
-async sendOptionList(to){
-    await this._send(to, "interactive",{
-      type: "list",
-      header: {
-        type: "text",
-        text: "Options Menu",
-      },
-      body: {
-        text: "Select the Options",
-      },
-      action: {
-        button: "Options",
-        sections: [
-          {
-            title: "Options",
-            rows: [
-              {
-                id: "1",
-                title: "Attendance",
-              },
-              {
-                id: "2",
-                title: "Class Schedule",
-              },
-              {
-                id: "3",
-                title: "Courses",
-              },
-              {
-                id: "4",
-                title: "Semesters",
-              },
-              {
-                id: "5",
-                title: "Main Menu",
-              },
-            ]
-          }
-        ]
-      }
-    })
-  }
+  // async sendOptionList(to){
+  //     await this._send(to, "interactive",{
+  //       type: "list",
+  //       header: {
+  //         type: "text",
+  //         text: "options menu",
+  //       },
+  //       body: {
+  //         text: "select the options",
+  //       },
+  //       action: {
+  //         button: "options",
+  //         sections: [
+  //           {
+  //             title: "options",
+  //             rows: [
+  //               {
+  //                 id: "1",
+  //                 title: "attendance",
+  //               },
+  //               {
+  //                 id: "2",
+  //                 title: "class schedule",
+  //               },
+  //               {
+  //                 id: "3",
+  //                 title: "courses",
+  //               },
+  //               {
+  //                 id: "4",
+  //                 title: "semesters",
+  //               },
+  //               {
+  //                 id: "5",
+  //                 title: "main menu",
+  //               },
+  //             ]
+  //           }
+  //         ]
+  //       }
+  //     })
+  //   }
 
   /**
    * @param {string} to

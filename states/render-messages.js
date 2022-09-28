@@ -35,7 +35,7 @@ export const renderAttendance = (attendance) => {
 
 export const renderSchedule = (schedule) => {
   let text = "";
-  text = `*------ Date: ${schedule.classes[0].startTime.substr(0,10)} ------*
+  text = `*------ Date: ${schedule.classes[0].startTime.substr(0, 10)} ------*
   
 `
   for (let i = 0; i < schedule.classes.length; i += 1) {
@@ -43,7 +43,7 @@ export const renderSchedule = (schedule) => {
     text += `*Course* :${record.course.name} 
 *Faculty Name* :${record.faculty}
 *Room* :${record.room}
-*Time* :${record.startTime.substr(11,5)} - ${record.endTime.substr(11,5)}
+*Time* :${record.startTime.substr(11, 5)} - ${record.endTime.substr(11, 5)}
 
 `;
   }
@@ -64,3 +64,85 @@ export const renderSemester = (semesters) => {
   }
   return text;
 };
+
+export const renderWelcomeMessage = () => `\
+  Welcome the the Amibot Beta, proudly brought to you by the ALiAS Community.
+
+  Amibot is an open-source project hosted on fly.io. Source code is available at github.com/asetalias/amibot and open to contributions, bug reports and feature requests!
+
+  Join ALiAS, Amity's largest open source community, at asetalias.in ;)
+  `
+
+export const renderUsernamePrompt = () => "*Enter Username:*"
+
+export const renderPasswordPrompt = () => "*Enter Password:*"
+
+// Options. Type:Interactive
+export const renderOptions = () => ({
+    type: "button",
+    body: {
+      text: `\
+Select Options to view details
+Select Logout to start over again`
+    },
+    action: {
+      buttons: [
+        {
+          type: "reply",
+          reply: {
+            id: "opt-menu",
+            title: "Menu"
+          }
+        },
+        {
+          type: "reply",
+          reply: {
+            id: "opt-logout",
+            title: "Logout"
+          }
+        }
+      ]
+    }
+  })
+
+// TODO
+export const renderLoggedInMenu = () => ({
+    type: "list",
+    header: {
+      type: "text",
+      text: "options menu",
+    },
+    body: {
+      text: "select the options",
+    },
+    action: {
+      button: "options",
+      sections: [
+        {
+          title: "options",
+          rows: [
+            {
+              id: "1",
+              title: "attendance",
+            },
+            {
+              id: "2",
+              title: "class schedule",
+            },
+            {
+              id: "3",
+              title: "courses",
+            },
+            {
+              id: "4",
+              title: "semesters",
+            },
+            {
+              id: "5",
+              title: "main menu",
+            },
+          ]
+        }
+      ]
+    }
+  })

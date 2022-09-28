@@ -73,11 +73,14 @@ export default async function (fastify, opts) {
         // Respond with 200 OK and challenge token from the request
         console.log("WEBHOOK_VERIFIED");
         res.code(200).send(queryChallenge);
-      } else {
+        return;
+      } 
         // Responds with '403 Forbidden' if verify tokens do not match
         res.code(403);
-      }
+      
     }
     res.code(403);
   });
+
+  return {};
 }

@@ -1,10 +1,14 @@
 import * as amizone from "amizone_api";
 import { states } from "./states.js";
 import {
+  renderLoggedInMenu,
   renderAttendance,
   renderOptionsMenu,
   renderSemester,
   renderSchedule,
+  renderWelcomeMessage,
+  renderUsernamePrompt,
+  renderPasswordPrompt,
 } from "./render-messages.js";
 import { firstNonEmpty } from "../utils.js";
 
@@ -37,8 +41,8 @@ export const handleNewUser = async (ctx) => {
   const updatedUser = structuredClone(ctx.user);
   const message = payload.textBody;
   if (message?.toLowerCase() === "start") {
-    await ctx.bot.sendTemplate(payload.sender, "welcome");
-    await ctx.bot.sendTemplate(payload.sender, "username");
+    await ctx.bot.sendMessage(payload.sender, renderWelcomeMessage());
+    await ctx.bot.sendMessage(payload.render, renderUsernamePrompt());
     updatedUser.state = states.EXPECT_USERNAME;
     return updatedUser;
   }
@@ -55,7 +59,7 @@ export const handleUsername = async (ctx) => {
   const updatedUser = structuredClone(ctx.user);
   updatedUser.state = states.EXPECT_PASSWORD;
   updatedUser.amizoneCredentials.username = payload.textBody;
-  await ctx.bot.sendTemplate(payload.sender, "password");
+  await ctx.bot.sendMessage(payload.sender, renderPasswordPrompt());
   return updatedUser;
 };
 
@@ -74,8 +78,7 @@ export const handlePassword = async (ctx) => {
   if (credentialsAreValid) {
     updatedUser.amizoneCredentials.password = password;
     updatedUser.state = states.LOGGED_IN;
-    // @todo update template name
-    await ctx.bot.sendTemplate(payload.sender, "button");
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderLoggedInMenu());
     return updatedUser;
   }
   await ctx.bot.sendMessage(
@@ -84,7 +87,7 @@ export const handlePassword = async (ctx) => {
   );
   updatedUser.amizoneCredentials.username = null;
   updatedUser.state = states.EXPECT_USERNAME;
-  await ctx.bot.sendTemplate(payload.sender, "username");
+  await ctx.bot.sendMessage(payload.sender, renderUsernamePrompt());
   return updatedUser;
 };
 
@@ -172,8 +175,7 @@ export const handleLoggedIn = async (ctx) => {
 
   switch (message.toLowerCase()) {
     case "options":
-       await ctx.bot.sendOptionList(payload.sender);
-      // await ctx.bot.sendMessage(payload.sender,renderOptionsMenu());
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderOptionsMenu());
       return updatedUser;
     case "logout":
       updatedUser.amizoneCredentials = { username: "", password: "" };
@@ -189,7 +191,7 @@ export const handleLoggedIn = async (ctx) => {
             updatedUser.state = states.USE_DATE;
           } else {
             await ctx.bot.sendMessage(payload.sender, text);
-            await ctx.bot.sendTemplate(ctx.payload.sender, "button");
+            await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderLoggedInMenu());
           }
 
           return updatedUser;
@@ -198,7 +200,7 @@ export const handleLoggedIn = async (ctx) => {
           payload.sender,
           "unsuccessful. maybe try logging in again?"
         );
-        await ctx.bot.sendTemplate(payload.sender, "username");
+        await ctx.bot.sendMessage(payload.sender, renderUsernamePrompt());
         updatedUser.state = states.EXPECT_USERNAME;
         return updatedUser;
       }
@@ -228,10 +230,10 @@ export const handleUseDate = async (ctx) => {
       } else {
         await ctx.bot.sendMessage(payload.sender, "no schedule available.");
       }
-      await ctx.bot.sendTemplate(ctx.payload.sender, "button");
+      await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderLoggedInMenu());
       updatedUser.state = states.LOGGED_IN;
     } catch (err) {
-      // catch invalid credential?
+      // ? catch invalid credential
       console.error(`error while processing req: ${err}`);
     }
     return updatedUser;
