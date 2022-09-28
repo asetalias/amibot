@@ -1,17 +1,4 @@
 /**
- * Render and return the option menu for logged-in users.
- * @returns {string}
- */
-export const renderOptionsMenu = () => `
-  *Options Menu*
-  1. Attendance
-  2. Class Schedule
-  3. Courses
-  4. Semesters
-  5. Menu
-  `;
-
-/**
  * Renders and returns the attendance message.
  *
  * @param {import("amizone_api").V1AttendanceRecords} attendance
@@ -78,7 +65,7 @@ export const renderUsernamePrompt = () => "*Enter Username:*"
 export const renderPasswordPrompt = () => "*Enter Password:*"
 
 // Options. Type:Interactive
-export const renderOptions = () => ({
+export const renderOptionButtons = () => ({
     type: "button",
     body: {
       text: `\
@@ -106,7 +93,7 @@ Select Logout to start over again`
   })
 
 // TODO
-export const renderLoggedInMenu = () => ({
+export const renderAmizoneMenu = () => ({
     type: "list",
     header: {
       type: "text",

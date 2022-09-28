@@ -1,14 +1,14 @@
 import * as amizone from "amizone_api";
 import { states } from "./states.js";
 import {
-  renderLoggedInMenu,
+  renderAmizoneMenu,
   renderAttendance,
-  renderOptionsMenu,
   renderSemester,
   renderSchedule,
   renderWelcomeMessage,
   renderUsernamePrompt,
   renderPasswordPrompt,
+  renderOptionButtons,
 } from "./render-messages.js";
 import { firstNonEmpty } from "../utils.js";
 
@@ -78,7 +78,7 @@ export const handlePassword = async (ctx) => {
   if (credentialsAreValid) {
     updatedUser.amizoneCredentials.password = password;
     updatedUser.state = states.LOGGED_IN;
-    await ctx.bot.sendInteractiveMessage(payload.sender, renderLoggedInMenu());
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderOptionButtons());
     return updatedUser;
   }
   await ctx.bot.sendMessage(
@@ -175,7 +175,7 @@ export const handleLoggedIn = async (ctx) => {
 
   switch (message.toLowerCase()) {
     case "options":
-      await ctx.bot.sendInteractiveMessage(payload.sender, renderOptionsMenu());
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
       return updatedUser;
     case "logout":
       updatedUser.amizoneCredentials = { username: "", password: "" };
@@ -191,7 +191,7 @@ export const handleLoggedIn = async (ctx) => {
             updatedUser.state = states.USE_DATE;
           } else {
             await ctx.bot.sendMessage(payload.sender, text);
-            await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderLoggedInMenu());
+            await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderOptionButtons());
           }
 
           return updatedUser;
@@ -230,7 +230,7 @@ export const handleUseDate = async (ctx) => {
       } else {
         await ctx.bot.sendMessage(payload.sender, "no schedule available.");
       }
-      await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderLoggedInMenu());
+      await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderOptionButtons());
       updatedUser.state = states.LOGGED_IN;
     } catch (err) {
       // ? catch invalid credential
