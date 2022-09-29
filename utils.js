@@ -1,4 +1,4 @@
-const OFFSET_IST = -330;
+const OFFSET_IST = 330;
 const MINUTE_TO_MS = 60_000;
 const DAY_TO_MINUTE = 24 * 60;
 const currentTzOffset = new Date().getTimezoneOffset();
