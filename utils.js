@@ -4,7 +4,7 @@ const DAY_TO_MINUTE = 24 * 60;
 const currentTzOffset = new Date().getTimezoneOffset();
 
 /**
- * Find and return the first non-empty among the strings passed.
+ * Find and return the first non-empty among the strings passed. If none, an empty string is returned.
  * @param {string} vals
  */
 export const firstNonEmpty = (...vals) =>

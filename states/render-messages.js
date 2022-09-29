@@ -53,12 +53,12 @@ export const renderSemester = (semesters) => {
 };
 
 export const renderWelcomeMessage = () => `\
-  Welcome the the Amibot Beta, proudly brought to you by the ALiAS Community.
+Welcome the the Amibot Beta, proudly brought to you by the ALiAS Community.
 
-  Amibot is an open-source project hosted on fly.io. Source code is available at github.com/asetalias/amibot and open to contributions, bug reports and feature requests!
+Amibot is an open-source project hosted on fly.io. Source code is available at github.com/asetalias/amibot and open to contributions, bug reports and feature requests!
 
-  Join ALiAS, Amity's largest open source community, at asetalias.in ;)
-  `
+Join ALiAS, Amity's largest open source community, at asetalias.in ;)
+`
 
 export const renderUsernamePrompt = () => "*Enter Username:*"
 

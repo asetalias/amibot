@@ -199,6 +199,9 @@ export const parseWebhookPayload = (body) => {
   } = objectSafe(interactiveObject);
 
   const interactiveElement = (() => {
+    if (interactiveType === "button_reply") {
+      return buttonReply;
+    }
     if (interactiveType === "button") {
       return buttonReply;
     }
@@ -213,7 +216,7 @@ export const parseWebhookPayload = (body) => {
     }
     return {};
   })();
-  const { title: interactiveTitle, description: interactiveDescription } =
+  const { title: interactiveTitle, id: interactiveId } =
     interactiveElement;
 
   return {
@@ -226,7 +229,7 @@ export const parseWebhookPayload = (body) => {
     interactive: {
       type: interactiveType ?? "",
       title: interactiveTitle ?? "",
-      description: interactiveDescription ?? "",
+      interactiveId: interactiveId ?? "",
     },
     button: {
       payload: buttonPayload ?? "",

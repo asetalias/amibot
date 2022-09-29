@@ -106,11 +106,11 @@ const newAmizoneClient = (ctx) => {
 };
 
 const loggedInOptions = {
-  GET_ATTENDANCE: "Attendance",
-  GET_SCHEDULE: "Class Schedule",
-  GET_COURSES: "Courses",
-  GET_SEMESTERS: "Semesters",
-  GET_MENU: "Main Menu",
+  GET_ATTENDANCE: "attendance",
+  GET_SCHEDULE: "class schedule",
+  GET_COURSES: "courses",
+  GET_SEMESTERS: "semesters",
+  GET_MENU: "main menu",
 };
 
 /**
@@ -170,7 +170,7 @@ const optionsMap = new Map([
  */
 export const handleLoggedIn = async (ctx) => {
   const { payload } = ctx;
-  const message = firstNonEmpty(payload.button.text, payload.textBody, payload.interactive.title);
+  const message = firstNonEmpty(payload.button.text, payload.textBody, payload.interactive.title).toLowerCase();
   const updatedUser = structuredClone(ctx.user);
 
   switch (message.toLowerCase()) {
@@ -204,6 +204,9 @@ export const handleLoggedIn = async (ctx) => {
         updatedUser.state = states.EXPECT_USERNAME;
         return updatedUser;
       }
+      // TODO: remove
+      console.log("invalid opt");
+      await ctx.bot.sendMessage(payload.sender, "invalid opt...");
       return updatedUser;
   }
   // @todo queries

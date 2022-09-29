@@ -19,6 +19,9 @@ export default async function (fastify, opts) {
     }
 
     const payload = parseWebhookPayload(req.body);
+    
+    // TODO: remove
+    console.log(`payload: ${JSON.stringify(payload)}`);
 
     if (payload.subject !== "whatsapp_business_account") {
       res.code(404);
