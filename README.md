@@ -3,12 +3,13 @@
 ![Tests](https://img.shields.io/github/workflow/status/ditsuke/go-amizone/tests?label=tests&logo=github)
 ![Issues](https://img.shields.io/github/issues/asetalias/amibot?logo=github)
 ![License](https://img.shields.io/github/license/asetalias/amibot)
+<img src="https://img.shields.io/badge/-JS-F7DF1E?logo=JavaScript&logoColor=fff">
 
 ---
-## _The Problem_
-- Students travelling to and from the Amity University generally opt for Public transport
-- Students are unable to access student portal due to slow connectivity
-- Apps are available but only for Android users
+## What were the various issues which were being faced by the students?
+
+Students from Amity University were facing issues with the student portal - Amizone. We all know that a website takes a considerable amount of data to load properly and then again it can get stuck at places. 
+It used to work at times and at other times, just keep buffering due to the slow connectivity that some students were having.
 
 ## _Solution_
 - An app for Android and iOS? 
