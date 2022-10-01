@@ -1,5 +1,9 @@
 # AMIBOT
 
+![Tests](https://img.shields.io/github/workflow/status/ditsuke/go-amizone/tests?label=tests&logo=github)
+![Issues](https://img.shields.io/github/issues/asetalias/amibot?logo=github)
+![License](https://img.shields.io/github/license/asetalias/amibot)
+
 ---
 ## _The Problem_
 - Students travelling to and from the Amity University generally opt for Public transport
