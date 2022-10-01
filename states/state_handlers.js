@@ -42,7 +42,7 @@ export const handleNewUser = async (ctx) => {
   const message = payload.textBody;
   if (message?.toLowerCase() === "start") {
     await ctx.bot.sendMessage(payload.sender, renderWelcomeMessage());
-    await ctx.bot.sendMessage(payload.render, renderUsernamePrompt());
+    await ctx.bot.sendMessage(payload.sender, renderUsernamePrompt());
     updatedUser.state = states.EXPECT_USERNAME;
     return updatedUser;
   }
