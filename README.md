@@ -42,3 +42,8 @@
 - Integrating more features provided by the Amizone API 
 - Allow students to schedule daily delivery of Class Schedule and Attendance
 - Class Schedule updates will be sent via WhatsApp message
+
+
+## Code of Conduct
+
+To maintain a safe and inclusive space for everyone to learn and grow, contributors are advised to follow the [Code of Conduct](./codeOfConduct.md).
