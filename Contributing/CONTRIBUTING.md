@@ -69,6 +69,9 @@ Commit the changes once you are happy with them. See [Atom's contributing guide]
 
 ### Pull Request
 
+![image](https://user-images.githubusercontent.com/64458111/193404133-741c5664-5c12-45aa-a904-040957e5ac64.png)
+
+
 When you're finished with the changes, create a pull request, also known as a PR.
 - Fill the "Ready for review" template so that we can review your PR. This template helps reviewers understand your changes as well as the purpose of your pull request. 
 - Don't forget to [link PR to issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) if you are solving one.
