@@ -78,7 +78,7 @@ Select Logout to start over again`
           type: "reply",
           reply: {
             id: "opt-menu",
-            title: "Menu"
+            title: "Options"
           }
         },
         {
@@ -92,41 +92,41 @@ Select Logout to start over again`
     }
   })
 
-// TODO
+// Menu. Type: Interactive.
 export const renderAmizoneMenu = () => ({
     type: "list",
     header: {
       type: "text",
-      text: "options menu",
+      text: "Options Menu",
     },
     body: {
-      text: "select the options",
+      text: "Select an Option",
     },
     action: {
-      button: "options",
+      button: "Options",
       sections: [
         {
-          title: "options",
+          title: "Options",
           rows: [
             {
               id: "1",
-              title: "attendance",
+              title: "Attendance",
             },
             {
               id: "2",
-              title: "class schedule",
+              title: "Class Schedule",
             },
             {
               id: "3",
-              title: "courses",
+              title: "Courses",
             },
             {
               id: "4",
-              title: "semesters",
+              title: "Semesters",
             },
             {
               id: "5",
-              title: "main menu",
+              title: "Menu",
             },
           ]
         }
