@@ -2,7 +2,7 @@
 
 ---
 ## _The Problem_
-- Students travelling to and from University generally opt for Public transport
+- Students travelling to and from the Amity University generally opt for Public transport
 - Students are unable to access student portal due to slow connectivity
 - Apps are available but only for Android users
 
@@ -15,16 +15,17 @@
 ## _Introducing Amibot_
  - A WhatsApp chat bot that allows students to access University portal
  - Allows students to access portal's functionalities right on their finger tips
- - Integrates WhatsApp API by Meta allowing it to run on any device with WhatsApp 
+ - Integrates WhatsApp API by Meta allowing it to run on any device using WhatsApp 
 
 ## _Why Amibot ?_
-- <u>**Interactive**</u> - UX is simple clean and easy to use with buttons and lists
+- <u>**Interactive**</u> - UX is simple, clean and easy to use with buttons and lists
 - <u>**Practical**</u> - Allows accessiblity of data even when network is congested
 - <u>**Lightweight**</u> - Requires less bandwidth as data is in textual format
-- <u>**Platform Independent** </u>- Integrates WhatsApp API so can be accessed on any platform with WhatsApp (Android, iOS, Windows)
-- **Do not need to install another app**
+- <u>**Platform Independent** </u>- Integrates WhatsApp API so that it can be accessed on any platform with WhatsApp (Android, iOS, Windows)
+- <u>**Privacy** </u>- Open sourced, thus privacy is maintained
+- **No addtional app is needed to be installed to use the bot**
 
-## _Tools Used_
+## _Technologies Used_
 - WhatsApp Bussiness Cloud API
 - Amizone API 
 - JavaScript
@@ -32,8 +33,8 @@
 - MongoDB 
 
 ## _Salient Features_
-- Allows to access _Attendance, Class Schedule, Examination Schedule, Courses_ and many more
-- A simple and an interactive UX 
+- Allows to access _Attendance, Class Schedule, Examination Schedule, Courses_ and much more
+- A simple and interactive UX 
 - Uses state flow model to track each student's current state
 - Works even when connectivity is limited
 - Easy Integration 
@@ -41,4 +42,4 @@
 ## _What's next for Amibot ?_
 - Integrating more features provided by the Amizone API 
 - Allow students to schedule daily delivery of Class Schedule and Attendance
-- Class Schedule updates will be sent via WhatsApp message
+- Class Schedule updates to be sent via WhatsApp message
