@@ -110,7 +110,7 @@ const loggedInOptions = {
   GET_SCHEDULE: "class schedule",
   GET_COURSES: "courses",
   GET_SEMESTERS: "semesters",
-  GET_MENU: "main menu",
+  GET_MENU: "menu",
 };
 
 /**

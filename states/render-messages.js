@@ -92,7 +92,7 @@ Select Logout to start over again`
     }
   })
 
-// TODO
+// Menu. Type: Interactive.
 export const renderAmizoneMenu = () => ({
     type: "list",
     header: {
@@ -110,23 +110,23 @@ export const renderAmizoneMenu = () => ({
           rows: [
             {
               id: "1",
-              title: "attendance",
+              title: "Attendance",
             },
             {
               id: "2",
-              title: "class schedule",
+              title: "Class Schedule",
             },
             {
               id: "3",
-              title: "courses",
+              title: "Courses",
             },
             {
               id: "4",
-              title: "semesters",
+              title: "Semesters",
             },
             {
               id: "5",
-              title: "main menu",
+              title: "Menu",
             },
           ]
         }
