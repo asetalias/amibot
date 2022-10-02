@@ -20,7 +20,7 @@ export default async function (fastify, opts) {
 
     const payload = parseWebhookPayload(req.body);
     
-    // TODO: remove
+    // TODO: remove console log
     console.log(`payload: ${JSON.stringify(payload)}`);
 
     if (payload.subject !== "whatsapp_business_account") {
@@ -33,14 +33,15 @@ export default async function (fastify, opts) {
       !payload.button.text &&
       !payload.interactive.type
     ) {
-      // @todo respond with an "invalid message" response
+      // TODO: respond with an "invalid message" response
       res.code(200);
       return {};
     }
 
     const [exists, user] = await getUser(payload.sender, db);
     if (!exists) {
-      console.log("new user!"); // @todo remove log
+      // TODO: remove console log
+      console.log("new user!");
     }
 
     const context = {
