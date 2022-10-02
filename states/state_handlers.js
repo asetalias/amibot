@@ -42,10 +42,11 @@ export const handleNewUser = async (ctx) => {
   const message = payload.textBody;
   if (message?.toLowerCase() === "start") {
     await ctx.bot.sendMessage(payload.sender, renderWelcomeMessage());
-    await ctx.bot.sendMessage(payload.render, renderUsernamePrompt());
+    await ctx.bot.sendMessage(payload.sender, renderUsernamePrompt());
     updatedUser.state = states.EXPECT_USERNAME;
     return updatedUser;
   }
+  // TODO: fix this message
   await ctx.bot.sendMessage(payload.sender, "Start the ctx.bot using *start*");
   return updatedUser;
 };
@@ -165,7 +166,7 @@ const optionsMap = new Map([
 
 /**
  * @param {BotHandlerContext} ctx
- * @todo MAJOR: catch errors on sending messages.
+ * TODO: MAJOR: catch errors on sending messages.
  * @returns {Promise<User>}
  */
 export const handleLoggedIn = async (ctx) => {
@@ -204,12 +205,12 @@ export const handleLoggedIn = async (ctx) => {
         updatedUser.state = states.EXPECT_USERNAME;
         return updatedUser;
       }
-      // TODO: remove
+      // TODO: remove console log
       console.log("invalid opt");
+      // TODO: send a more helpful message...
       await ctx.bot.sendMessage(payload.sender, "invalid opt...");
       return updatedUser;
   }
-  // @todo queries
 };
 
 export const handleUseDate = async (ctx) => {
@@ -223,14 +224,16 @@ export const handleUseDate = async (ctx) => {
       const schedule = await newAmizoneClient(
         ctx
       ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
-      console.log("fetched scheduled: ", schedule.data); // @todo remove
-      // send message here
+      // TODO: remove console log
+      console.log("fetched scheduled: ", schedule.data);
+      
       if (schedule.data.classes.length > 0) {
         await ctx.bot.sendMessage(
           payload.sender,
           renderSchedule(schedule.data)
         );
       } else {
+        // ? could we make this message more useful
         await ctx.bot.sendMessage(payload.sender, "no schedule available.");
       }
       await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderOptionButtons());

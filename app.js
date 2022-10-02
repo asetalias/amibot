@@ -8,13 +8,14 @@ import * as database from "./database.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- *
  * @param {App.Fastify} fastify
- * @param {Fastify.} opts
+ * @param {Object} opts
  */
 export default async function (fastify, opts) {
-  // @todo error wrapping, logging
+  // TODO: handle error and log
   const [client, dbCollection] = await database.connect();
+
+  // Close connection to DB as server closes
   fastify.addHook("onClose", () => {
     database.close(client);
   });

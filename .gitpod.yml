@@ -8,5 +8,3 @@ image:
 tasks:
   - init: yarn install
     command: yarn dev
-
-
