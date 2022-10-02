@@ -8,7 +8,7 @@ import {
   renderWelcomeMessage,
   renderUsernamePrompt,
   renderPasswordPrompt,
-  renderOptionButtons,
+  renderLogoutButton,
 } from "./render-messages.js";
 import { firstNonEmpty } from "../utils.js";
 
@@ -79,7 +79,8 @@ export const handlePassword = async (ctx) => {
   if (credentialsAreValid) {
     updatedUser.amizoneCredentials.password = password;
     updatedUser.state = states.LOGGED_IN;
-    await ctx.bot.sendInteractiveMessage(payload.sender, renderOptionButtons());
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderLogoutButton());
     return updatedUser;
   }
   await ctx.bot.sendMessage(
@@ -171,13 +172,14 @@ const optionsMap = new Map([
  */
 export const handleLoggedIn = async (ctx) => {
   const { payload } = ctx;
-  const message = firstNonEmpty(payload.button.text, payload.textBody, payload.interactive.title).toLowerCase();
+  const message = firstNonEmpty(
+    payload.button.text,
+    payload.textBody,
+    payload.interactive.title
+  ).toLowerCase();
   const updatedUser = structuredClone(ctx.user);
 
   switch (message.toLowerCase()) {
-    case "options":
-      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
-      return updatedUser;
     case "logout":
       updatedUser.amizoneCredentials = { username: "", password: "" };
       updatedUser.state = states.NEW_USER;
@@ -192,7 +194,14 @@ export const handleLoggedIn = async (ctx) => {
             updatedUser.state = states.USE_DATE;
           } else {
             await ctx.bot.sendMessage(payload.sender, text);
-            await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderOptionButtons());
+            await ctx.bot.sendInteractiveMessage(
+              payload.sender,
+              renderAmizoneMenu()
+            );
+            await ctx.bot.sendInteractiveMessage(
+              payload.sender,
+              renderLogoutButton()
+            );
           }
 
           return updatedUser;
@@ -209,6 +218,11 @@ export const handleLoggedIn = async (ctx) => {
       console.log("invalid opt");
       // TODO: send a more helpful message...
       await ctx.bot.sendMessage(payload.sender, "Invalid option. Please try again.");
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+      await ctx.bot.sendInteractiveMessage(
+        payload.sender,
+        renderLogoutButton()
+      );
       return updatedUser;
   }
 };
@@ -226,7 +240,7 @@ export const handleUseDate = async (ctx) => {
       ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
       // TODO: remove console log
       console.log("fetched scheduled: ", schedule.data);
-      
+
       if (schedule.data.classes.length > 0) {
         await ctx.bot.sendMessage(
           payload.sender,
@@ -236,7 +250,11 @@ export const handleUseDate = async (ctx) => {
         // ? could we make this message more useful
         await ctx.bot.sendMessage(payload.sender, "no schedule available.");
       }
-      await ctx.bot.sendInteractiveMessage(ctx.payload.sender, renderOptionButtons());
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+      await ctx.bot.sendInteractiveMessage(
+        payload.sender,
+        renderLogoutButton()
+      );
       updatedUser.state = states.LOGGED_IN;
     } catch (err) {
       // ? catch invalid credential
