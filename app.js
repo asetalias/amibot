@@ -1,18 +1,24 @@
+import "dotenv/config";
+
 import * as path from "path";
 import AutoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
+import * as database from "./database.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- *
- * @param {App.fastify} fastify
- * @param {*} opts
+ * @param {App.Fastify} fastify
+ * @param {Object} opts
  */
 export default async function (fastify, opts) {
-  // Place here your custom code!
+  // TODO: handle error and log
+  const [client, dbCollection] = await database.connect();
 
-  // Do not touch the following lines
+  // Close connection to DB as server closes
+  fastify.addHook("onClose", () => {
+    database.close(client);
+  });
 
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
@@ -26,6 +32,6 @@ export default async function (fastify, opts) {
   // define your routes in one of these
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, "routes"),
-    options: { ...opts },
+    options: { db: dbCollection, ...opts },
   });
 }
