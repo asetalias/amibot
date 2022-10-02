@@ -78,7 +78,7 @@ Select Logout to start over again`
           type: "reply",
           reply: {
             id: "opt-menu",
-            title: "Menu"
+            title: "Options"
           }
         },
         {
@@ -97,16 +97,16 @@ export const renderAmizoneMenu = () => ({
     type: "list",
     header: {
       type: "text",
-      text: "options menu",
+      text: "Options Menu",
     },
     body: {
-      text: "select the options",
+      text: "Select an Option",
     },
     action: {
-      button: "options",
+      button: "Options",
       sections: [
         {
-          title: "options",
+          title: "Options",
           rows: [
             {
               id: "1",

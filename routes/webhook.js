@@ -20,7 +20,7 @@ export default async function (fastify, opts) {
 
     const payload = parseWebhookPayload(req.body);
     
-    // TODO: remove
+    // TODO: remove console log
     console.log(`payload: ${JSON.stringify(payload)}`);
 
     if (payload.subject !== "whatsapp_business_account") {
@@ -33,14 +33,15 @@ export default async function (fastify, opts) {
       !payload.button.text &&
       !payload.interactive.type
     ) {
-      // @todo respond with an "invalid message" response
+      // TODO: respond with an "invalid message" response
       res.code(200);
       return {};
     }
 
     const [exists, user] = await getUser(payload.sender, db);
     if (!exists) {
-      console.log("new user!"); // @todo remove log
+      // TODO: remove console log
+      console.log("new user!");
     }
 
     const context = {
@@ -58,6 +59,8 @@ export default async function (fastify, opts) {
     return {};
   });
 
+  // TODO: factor out request verification.
+  // TODO: MAJOR: The post endpoint needs webhook verification too!
   // Accepts GET requests at the /webhook endpoint. You need this URL to set up webhook initially.
   // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
   fastify.get("/webhook", (req, res) => {

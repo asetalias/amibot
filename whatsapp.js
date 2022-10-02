@@ -57,6 +57,7 @@ export class WhatsappApiClient {
     await this._send(to, "interactive", message);
   }
 
+  // TODO: factor this factor out to `render.js`. The WhatsApp class should only have generalized methods
   async sendDateList(to) {
     const dates = new Array(5);
     for (let i = 0; i < 5; i += 1) {
@@ -88,55 +89,14 @@ export class WhatsappApiClient {
     });
   }
 
-  // async sendOptionList(to){
-  //     await this._send(to, "interactive",{
-  //       type: "list",
-  //       header: {
-  //         type: "text",
-  //         text: "options menu",
-  //       },
-  //       body: {
-  //         text: "select the options",
-  //       },
-  //       action: {
-  //         button: "options",
-  //         sections: [
-  //           {
-  //             title: "options",
-  //             rows: [
-  //               {
-  //                 id: "1",
-  //                 title: "attendance",
-  //               },
-  //               {
-  //                 id: "2",
-  //                 title: "class schedule",
-  //               },
-  //               {
-  //                 id: "3",
-  //                 title: "courses",
-  //               },
-  //               {
-  //                 id: "4",
-  //                 title: "semesters",
-  //               },
-  //               {
-  //                 id: "5",
-  //                 title: "main menu",
-  //               },
-  //             ]
-  //           }
-  //         ]
-  //       }
-  //     })
-  //   }
-
   /**
    * @param {string} to
    * @param {"text"|"template"|"interactive"} type
    * @param {object} value
    * @returns {Promise<void>}
    * @private
+   *
+   * TODO: improve error handling flow
    */
   async _send(to, type, value) {
     await this._axios
@@ -156,7 +116,7 @@ export class WhatsappApiClient {
         }
       )
       .catch((err) =>
-        // @todo remove?
+        // TODO: remove this console log
         console.log("something went wrong while posting to meta api:", err)
       );
   }
@@ -165,6 +125,8 @@ export class WhatsappApiClient {
 /**
  * @param {Object} body
  * @returns {Payload}
+ * 
+ * TODO(refactor): replace destructuring with optional-chaining to make the code more readable.
  */
 export const parseWebhookPayload = (body) => {
   // Ensure we don't try to destructure non-arrays as arrays.
