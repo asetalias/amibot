@@ -88,55 +88,14 @@ export class WhatsappApiClient {
     });
   }
 
-  // async sendOptionList(to){
-  //     await this._send(to, "interactive",{
-  //       type: "list",
-  //       header: {
-  //         type: "text",
-  //         text: "options menu",
-  //       },
-  //       body: {
-  //         text: "select the options",
-  //       },
-  //       action: {
-  //         button: "options",
-  //         sections: [
-  //           {
-  //             title: "options",
-  //             rows: [
-  //               {
-  //                 id: "1",
-  //                 title: "attendance",
-  //               },
-  //               {
-  //                 id: "2",
-  //                 title: "class schedule",
-  //               },
-  //               {
-  //                 id: "3",
-  //                 title: "courses",
-  //               },
-  //               {
-  //                 id: "4",
-  //                 title: "semesters",
-  //               },
-  //               {
-  //                 id: "5",
-  //                 title: "main menu",
-  //               },
-  //             ]
-  //           }
-  //         ]
-  //       }
-  //     })
-  //   }
-
   /**
    * @param {string} to
    * @param {"text"|"template"|"interactive"} type
    * @param {object} value
    * @returns {Promise<void>}
    * @private
+   *
+   * TODO: improve error handling flow
    */
   async _send(to, type, value) {
     await this._axios
