@@ -59,6 +59,8 @@ export default async function (fastify, opts) {
     return {};
   });
 
+  // TODO: factor out request verification.
+  // TODO: MAJOR: The post endpoint needs webhook verification too!
   // Accepts GET requests at the /webhook endpoint. You need this URL to set up webhook initially.
   // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
   fastify.get("/webhook", (req, res) => {
