@@ -47,7 +47,7 @@ export const handleNewUser = async (ctx) => {
     return updatedUser;
   }
   // TODO: fix this message
-  await ctx.bot.sendMessage(payload.sender, "Start the bot using *start*");
+  await ctx.bot.sendMessage(payload.sender, "Start the bot by sending *start* word in the chat. 😊 ");
   return updatedUser;
 };
 
