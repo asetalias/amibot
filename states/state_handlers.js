@@ -8,7 +8,6 @@ import {
   renderWelcomeMessage,
   renderUsernamePrompt,
   renderPasswordPrompt,
-  renderLogoutButton,
 } from "./render-messages.js";
 import { firstNonEmpty } from "../utils.js";
 
@@ -80,7 +79,6 @@ export const handlePassword = async (ctx) => {
     updatedUser.amizoneCredentials.password = password;
     updatedUser.state = states.LOGGED_IN;
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
-    await ctx.bot.sendInteractiveMessage(payload.sender, renderLogoutButton());
     return updatedUser;
   }
   await ctx.bot.sendMessage(
@@ -198,10 +196,6 @@ export const handleLoggedIn = async (ctx) => {
               payload.sender,
               renderAmizoneMenu()
             );
-            await ctx.bot.sendInteractiveMessage(
-              payload.sender,
-              renderLogoutButton()
-            );
           }
 
           return updatedUser;
@@ -219,10 +213,6 @@ export const handleLoggedIn = async (ctx) => {
       // TODO: send a more helpful message...
       await ctx.bot.sendMessage(payload.sender, "Invalid option. Please try again.");
       await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
-      await ctx.bot.sendInteractiveMessage(
-        payload.sender,
-        renderLogoutButton()
-      );
       return updatedUser;
   }
 };
@@ -251,10 +241,6 @@ export const handleUseDate = async (ctx) => {
         await ctx.bot.sendMessage(payload.sender, "no schedule available.");
       }
       await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
-      await ctx.bot.sendInteractiveMessage(
-        payload.sender,
-        renderLogoutButton()
-      );
       updatedUser.state = states.LOGGED_IN;
     } catch (err) {
       // ? catch invalid credential

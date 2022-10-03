@@ -63,26 +63,6 @@ export const renderUsernamePrompt = () => "*Enter Username:*";
 
 export const renderPasswordPrompt = () => "*Enter Password:*";
 
-// Logout. Type:Interactive
-export const renderLogoutButton = () => ({
-  type: "button",
-  body: {
-    text: `\
-Select Logout to start over again`,
-  },
-  action: {
-    buttons: [
-      {
-        type: "reply",
-        reply: {
-          id: "opt-logout",
-          title: "Logout",
-        },
-      },
-    ],
-  },
-});
-
 // Menu. Type: Interactive.
 export const renderAmizoneMenu = () => ({
   type: "list",
@@ -118,6 +98,10 @@ export const renderAmizoneMenu = () => ({
           {
             id: "5",
             title: "Menu",
+          },
+          {
+            id: "6",
+            title: "Logout",
           },
         ],
       },
