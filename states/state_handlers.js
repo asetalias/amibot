@@ -208,7 +208,7 @@ export const handleLoggedIn = async (ctx) => {
       // TODO: remove console log
       console.log("invalid opt");
       // TODO: send a more helpful message...
-      await ctx.bot.sendMessage(payload.sender, "invalid opt...");
+      await ctx.bot.sendMessage(payload.sender, "Invalid option. Please try again.");
       return updatedUser;
   }
 };
