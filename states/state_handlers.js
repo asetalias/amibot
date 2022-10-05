@@ -47,7 +47,7 @@ export const handleNewUser = async (ctx) => {
     return updatedUser;
   }
   // TODO: fix this message
-  await ctx.bot.sendMessage(payload.sender, "Start the ctx.bot using *start*");
+  await ctx.bot.sendMessage(payload.sender, "Start the bot by sending *start* in the chat. 😊");
   return updatedUser;
 };
 
@@ -208,7 +208,7 @@ export const handleLoggedIn = async (ctx) => {
       // TODO: remove console log
       console.log("invalid opt");
       // TODO: send a more helpful message...
-      await ctx.bot.sendMessage(payload.sender, "invalid opt...");
+      await ctx.bot.sendMessage(payload.sender, "Invalid option. Please try again.");
       return updatedUser;
   }
 };
