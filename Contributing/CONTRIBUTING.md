@@ -58,6 +58,34 @@ Click **Make a contribution** at the bottom of any docs page to make small chang
 
 3. Create a working branch and start with your changes!
 
+### Project setup
+
+ This describes the setup you need to test and run this application on your local computer.
+ 
+ 1. [WhatsApp token](https://developers.facebook.com/docs/whatsapp/business-management-api/get-started) 
+
+- [Setup a facebook developer account](https://developers.facebook.com/)
+- [Get started with WhatsApp Business Cloud API](https://developers.facebook.com/docs/whatsapp/business-management-api/get-started)
+- Add a test number.
+
+2. [MongoDB](https://www.mongodb.com/)
+
+-[Create a DB on MongoDB Atlas](https://www.mongodb.com/docs/atlas/getting-started/) or create one locally.
+
+3. [Node.js](https://nodejs.org/en/download/)
+
+-Node version (18+ -- use [`nvm`](https://github.com/nvm-sh/nvm) for easy setup)
+
+4. Make `.env` file
+-Make `.env` file by copying `.env.sample` and populating whatsapp token, `VERIFY_TOKEN` (for Whatsapp Webhook) and Mongodb details.
+
+5. Start project with `yarn start` or `yarn dev`.
+
+6. Install `ngrok`
+- Create account on https://ngrok.com, login and expose local the local Amibot instance with `ngrok http 3000 --region us` (the region is important -- facebook currently blocks other ngrok regions.
+
+
+
 ### Commit your update
 
 Commit the changes once you are happy with them. See [Atom's contributing guide](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#git-commit-messages) to know how to use emoji for commit messages.
