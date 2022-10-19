@@ -1,8 +1,6 @@
-# Welcome to Amibot contributing guide 
+# Welcome to the Amibot contributing guide
 
-Thank you for investing your time in contributing to our project! :sparkles:. 
-
-<!-- Read our [Code of Conduct](./CODE_OF_CONDUCT.md) to keep our community approachable and respectable. -->
+Thank you for investing your time in contributing to our project! :sparkles:.
 
 In this guide you will get an overview of the contribution workflow from opening an issue, creating a PR, reviewing, and merging the PR.
 
@@ -17,7 +15,6 @@ To get an overview of the project, read the [README](README.md). Here are some r
 - [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow)
 - [Collaborating with pull requests](https://docs.github.com/en/github/collaborating-with-pull-requests)
 
-
 ## Getting started
 
 Check to see what [types of contributions](/contributing/types-of-contributions.md) we accept before making changes. Some of them don't even require writing a single line of code :sparkles:.
@@ -26,17 +23,13 @@ Check to see what [types of contributions](/contributing/types-of-contributions.
 
 #### Create a new issue
 
-If you spot a problem with the docs, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant issue tag.
+If you encounter an issue with Amibot, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant issue tag.
+
 #### Solve an issue
 
-Scan through our [existing issues](https://github.com/asetalias/amibot/issues) to find one that interests you. You can narrow down the search using `labels` as filters.As a general rule, we don’t assign issues to anyone. If you find an issue to work on, you are welcome to open a PR with a fix.
+Scan through our [existing issues](https://github.com/asetalias/amibot/issues) to find one that interests you. You can narrow down the search using `labels` as filters. As a general rule, you should ask to be asigned to the issue you want to work on. However, you can open a PR for an issue even if you're not assigned!
 
 ### Make Changes
-
-#### Make changes in the UI
-
-Click **Make a contribution** at the bottom of any docs page to make small changes such as a typo, sentence fix, or a broken link. This takes you to the `.md` file where you can make your changes and [create a pull request](#pull-request) for a review. 
-
 
 #### Make changes locally
 
@@ -46,7 +39,6 @@ Click **Make a contribution** at the bottom of any docs page to make small chang
   - Directly click on fork and make changes in the local repository on your github account.
  ![image](https://user-images.githubusercontent.com/64458111/193403656-7fad4e89-d7b0-4f3a-be64-64bf3b32c0f1.png)
 
-
 - Using GitHub Desktop:
   - [Getting started with GitHub Desktop](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/getting-started-with-github-desktop) will guide you through setting up Desktop.
   - Once Desktop is set up, you can use it to [fork the repo](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/cloning-and-forking-repositories-from-github-desktop)!
@@ -54,54 +46,65 @@ Click **Make a contribution** at the bottom of any docs page to make small chang
 - Using the command line:
   - [Fork the repo](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#fork-an-example-repository) so that you can make your changes without affecting the original project until you're ready to merge them.
 
-<!-- 3. Install or update to **Node.js v16**. For more information, see [the development guide](contributing/development.md). -->
+### Project setup -- Prerequisites
 
-3. Create a working branch and start with your changes!
+This describes the setup you need to test and run this application on your local computer.
 
-### Project setup
+#### [Node.JS](https://nodejs.org/en/download/)
 
- This describes the setup you need to test and run this application on your local computer.
- 
- 1. [WhatsApp token](https://developers.facebook.com/docs/whatsapp/business-management-api/get-started) 
+Amibot needs Node version 18+ -- use [`nvm`](https://github.com/nvm-sh/nvm) for easy setup.
+
+#### WhatsApp Business Cloud API
+
+Amibot uses the [WhatsApp Business Cloud API][wa-business-cloud-api] to send and recieve messages on WhatsApp. Here's how you can get started:
 
 - [Setup a facebook developer account](https://developers.facebook.com/)
-- [Get started with WhatsApp Business Cloud API](https://developers.facebook.com/docs/whatsapp/business-management-api/get-started)
-- Add a test number.
+- [Get started with WhatsApp Business Cloud API][wa-business-cloud-api]
+- Add a test number so you can interact with your local deployment of the bot.
+- Setup a webhook for whatsapp events (once you start Amibot and ngrok).
 
-2. [MongoDB](https://www.mongodb.com/)
+#### [MongoDB](https://www.mongodb.com/)
 
--[Create a DB on MongoDB Atlas](https://www.mongodb.com/docs/atlas/getting-started/) or create one locally.
+Amibot uses MongoDB to persist user state. You can either use the hosted MongoDB Atlas (recommended)
+or spin up an instance locally.
 
-3. [Node.js](https://nodejs.org/en/download/)
+- [Create a DB on MongoDB Atlas][mongodb-atlas].
 
-	- Node version (18+ -- use [`nvm`](https://github.com/nvm-sh/nvm) for easy setup)
+#### The `.env` file
 
-4. Make `.env` file
-	- Make `.env` file by copying `.env.sample` and populating whatsapp token, `VERIFY_TOKEN` (for Whatsapp Webhook) and Mongodb details.
+Make a `.env` file by copying `.env.sample` and populating the `WHATSAPP_TOKEN`, `VERIFY_TOKEN` (token used for facebook ) and other fields.
 
-5. Start project with `yarn start` or `yarn dev`.
+#### ngrok
 
-6. Install `ngrok`
-	- Create account on https://ngrok.com, login and expose local the local Amibot instance with `ngrok http 3000 --region us` (the region is important -- facebook currently blocks other ngrok regions.
+  We need to expose the local web server to the internet so we can set up a WhatsApp webhook for the Amibot instance. [ngrok][ngrok] is an easy-to-use service that lets us do just that!
+  Steps to setup:
 
+- Create account on <https://ngrok.com>.
+- Install the ngrok CLI.
+- Login to your ngrok account: `ngrok config add-authtoken <authtoken>`
+- Expose the local Amibot instance with `ngrok http 3000 --region us` (the region is important --
+    facebook currently blocks other ngrok regions.
+- Use `<ngrok-url>/webhook` as the webhook URL on the Meta developer portal.
 
+### Project Setup -- Starting Amibot
+
+`yarn dev` to start Amibot with live-reload (the bot will restart with each change you make to the code).
 
 ### Commit your update
 
-Commit the changes once you are happy with them. See [Atom's contributing guide](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#git-commit-messages) to know how to use emoji for commit messages.
-
-<!-- Once your changes are ready, don't forget to [self-review](/contributing/self-review.md) to speed up the review process:zap:. -->
+Commit your changes to a new branch once you're happy with them.
+See [Conventional Commits][conventional-commits] -- a lightweight convention
+for commit messages we recommend for contributions to Amibot.
 
 ![image](https://user-images.githubusercontent.com/64458111/193404058-2af44221-77d0-4544-94c1-d48217935e8a.png)
-
 
 ### Pull Request
 
 ![image](https://user-images.githubusercontent.com/64458111/193404133-741c5664-5c12-45aa-a904-040957e5ac64.png)
 
-
 When you're finished with the changes, create a pull request, also known as a PR.
-- Fill the "Ready for review" template so that we can review your PR. This template helps reviewers understand your changes as well as the purpose of your pull request. 
+
+- Fill the "Ready for review" template so that we can review your PR. This template helps reviewers understand your changes as well as the purpose of your pull request.
 - Don't forget to [link PR to issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) if you are solving one.
 - Enable the checkbox to [allow maintainer edits](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork) so the branch can be updated for a merge.
 Once you submit your PR, a Docs team member will review your proposal. We may ask questions or request for additional information.
@@ -109,7 +112,7 @@ Once you submit your PR, a Docs team member will review your proposal. We may as
 - As you update your PR and apply changes, mark each conversation as [resolved](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request#resolving-conversations).
 - If you run into any merge issues, checkout this [git tutorial](https://github.com/skills/resolve-merge-conflicts) to help you resolve merge conflicts and other issues.
 
-### Your PR is ready!
+### Your PR is ready
 
 Congratulations :tada::tada: The Amity student body thanks you :sparkles:
 
@@ -117,3 +120,7 @@ We'll follow up your PR with reviews and suggestions that might require you to w
 
 Once your PR is merged, your contributions will be publicly visible!
 
+[conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/
+[ngrok]: https://www.conventionalcommits.org/en/v1.0.0/
+[mongodb-atlas]: https://www.conventionalcommits.org/en/v1.0.0/
+[wa-business-cloud-api]: https://developers.facebook.com/docs/whatsapp/cloud-api/
