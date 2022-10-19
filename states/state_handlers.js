@@ -46,7 +46,10 @@ export const handleNewUser = async (ctx) => {
     return updatedUser;
   }
   // TODO: fix this message
-  await ctx.bot.sendMessage(payload.sender, "Start the bot by sending *start* in the chat. 😊");
+  await ctx.bot.sendMessage(
+    payload.sender,
+    "Start the bot by sending *start* in the chat. 😊"
+  );
   return updatedUser;
 };
 
@@ -212,10 +215,7 @@ export const handleLoggedIn = async (ctx) => {
       console.log("invalid opt");
       // TODO: send a more helpful message...
       await ctx.bot.sendMessage(payload.sender, "invalid opt...");
-      await ctx.bot.sendInteractiveMessage(
-        payload.sender,
-        renderAmizoneMenu(),
-      )
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
       return updatedUser;
   }
 };
