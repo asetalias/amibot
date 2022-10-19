@@ -49,9 +49,9 @@ export class WhatsappApiClient {
   }
 
   /**
-   * 
-   * @param {string} to 
-   * @param {object} message 
+   *
+   * @param {string} to
+   * @param {object} message
    */
   async sendInteractiveMessage(to, message) {
     await this._send(to, "interactive", message);
@@ -81,7 +81,7 @@ export class WhatsappApiClient {
             rows: dates.map((dateString, index) => ({
               id: index + 1,
               title: dateString,
-              description: index === 2 ? "Today" : ""
+              description: index === 2 ? "Today" : "",
             })),
           },
         ],
@@ -125,7 +125,7 @@ export class WhatsappApiClient {
 /**
  * @param {Object} body
  * @returns {Payload}
- * 
+ *
  * TODO(refactor): replace destructuring with optional-chaining to make the code more readable.
  */
 export const parseWebhookPayload = (body) => {
@@ -179,8 +179,7 @@ export const parseWebhookPayload = (body) => {
     }
     return {};
   })();
-  const { title: interactiveTitle, id: interactiveId } =
-    interactiveElement;
+  const { title: interactiveTitle, id: interactiveId } = interactiveElement;
 
   return {
     subject,

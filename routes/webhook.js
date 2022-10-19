@@ -19,7 +19,7 @@ export default async function (fastify, opts) {
     }
 
     const payload = parseWebhookPayload(req.body);
-    
+
     // TODO: remove console log
     console.log(`payload: ${JSON.stringify(payload)}`);
 
@@ -80,10 +80,9 @@ export default async function (fastify, opts) {
         console.log("WEBHOOK_VERIFIED");
         res.code(200).send(queryChallenge);
         return;
-      } 
-        // Responds with '403 Forbidden' if verify tokens do not match
-        res.code(403);
-      
+      }
+      // Responds with '403 Forbidden' if verify tokens do not match
+      res.code(403);
     }
     res.code(403);
   });
