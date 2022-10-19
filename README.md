@@ -56,9 +56,10 @@ We were presented with the same problem and thought of making a proper app for b
 - Allowing students to schedule daily delivery of Class Schedule and Attendance via WhatsApp message
 
 ## How can I contribute to this project?
-Contributions to the project are welcome! If you have a bug or feature request, please open an issue on the
-[GitHub repo][github]. Also, you can read the types-of-contribution.md file and check for more ways to contribute to the project. 😉
 
+Contributions to the project are welcome! If you have a bug or feature request, please open an issue on
+[GitHub][github]. Read the [Contribution Guide](./CONTRIBUTING.md) for more information, including
+how to run the project locally.
 
 [github]: https://github.com/asetalias/amibot
 
