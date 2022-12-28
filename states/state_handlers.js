@@ -254,5 +254,6 @@ export const handleUseDate = async (ctx) => {
   await ctx.bot
     .sendMessage(ctx.payload.sender, "invalid date!")
     .catch((err) => console.error("failed to send message to WA: ", err));
+    await ctx.bot.sendDateList(payload.sender);
   return updatedUser;
 };
