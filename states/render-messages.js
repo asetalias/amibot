@@ -20,6 +20,29 @@ export const renderAttendance = (attendance) => {
   return text;
 };
 
+export const renderCourses = (courses) => {
+  let text = "";
+  const toPercent = (total, went) => ((went * 100) / total).toFixed(2);
+  for (let i = 0; i < courses.courses.length; i += 1) {
+    const course = courses.courses[i];
+    const code = course.ref.code;
+    const name = course.ref.name;
+    const type = course.type;
+    const attendance = `${course.attendance.attended}/${course.attendance.held} (${toPercent(
+      course.attendance.held,
+      course.attendance.attended
+    )}%)`;
+    const internalMarks = `${course.internalMarks.have}/${course.internalMarks.max}`;
+    text += `*Course*: ${name} *| Code*: ${code}
+        *Type*: ${type}
+        *Attendance*: ${attendance}
+        *Internal Marks*: ${internalMarks}
+        
+`;
+  }
+  return text;
+}
+
 export const renderSchedule = (schedule) => {
   let text = "";
   text = `*------ Date: ${schedule.classes[0].startTime.substr(0, 10)} ------*
