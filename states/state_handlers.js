@@ -3,6 +3,7 @@ import { states } from "./states.js";
 import {
   renderAmizoneMenu,
   renderAttendance,
+  renderCourses,
   renderSemester,
   renderSchedule,
   renderWelcomeMessage,
@@ -149,6 +150,23 @@ const optionsMap = new Map([
       [true, "list"],
   ],
   [
+    loggedInOptions.GET_COURSES,
+    async (ctx) => {
+      try {
+        const amizoneClient = newAmizoneClient(ctx);
+        const semesters = await amizoneClient.amizoneServiceGetSemesters();
+        const currentSemester = parseInt(semesters.data.semesters[0].name, 10);
+        // @todo Send a response to ask the user about which semester's courses he/she wants
+        const courses = await amizoneClient.amizoneServiceGetCourses(
+          currentSemester
+        );
+        return [true, renderCourses(courses.data)];
+      } catch (err) {
+        return [false, ""];
+      }
+    },
+  ],
+  [
     loggedInOptions.GET_SEMESTERS,
     async (ctx) => {
       try {
@@ -163,7 +181,7 @@ const optionsMap = new Map([
       }
     },
   ],
-  [loggedInOptions.GET_MENU, async (ctx) => [true, ""]],
+  [loggedInOptions.GET_MENU, async (_ctx) => [true, ""]],
 ]);
 
 /**
@@ -254,6 +272,6 @@ export const handleUseDate = async (ctx) => {
   await ctx.bot
     .sendMessage(ctx.payload.sender, "invalid date!")
     .catch((err) => console.error("failed to send message to WA: ", err));
-    await ctx.bot.sendDateList(payload.sender);
+  await ctx.bot.sendDateList(payload.sender);
   return updatedUser;
 };
