@@ -155,14 +155,16 @@ const optionsMap = new Map([
       try {
         const amizoneClient = newAmizoneClient(ctx);
         const semesters = await amizoneClient.amizoneServiceGetSemesters();
-        const currentSemester = parseInt(semesters.data.semesters[0].name);
+        const currentSemester = parseInt(semesters.data.semesters[0].name, 10);
         // @todo Send a response to ask the user about which semester's courses he/she wants
-        const courses = await amizoneClient.amizoneServiceGetCourses(currentSemester);
+        const courses = await amizoneClient.amizoneServiceGetCourses(
+          currentSemester
+        );
         return [true, renderCourses(courses.data)];
       } catch (err) {
-        return [false, ""]
+        return [false, ""];
       }
-    }
+    },
   ],
   [
     loggedInOptions.GET_SEMESTERS,
@@ -179,7 +181,7 @@ const optionsMap = new Map([
       }
     },
   ],
-  [loggedInOptions.GET_MENU, async (ctx) => [true, ""]],
+  [loggedInOptions.GET_MENU, async (_ctx) => [true, ""]],
 ]);
 
 /**

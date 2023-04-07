@@ -25,32 +25,30 @@ export const renderCourses = (courses) => {
   const toPercent = (total, went) => ((went * 100) / total).toFixed(2);
   for (let i = 0; i < courses.courses.length; i += 1) {
     const course = courses.courses[i];
-    const code = course.ref.code;
-    const name = course.ref.name;
-    const type = course.type;
-    const attendance = `${course.attendance.attended}/${course.attendance.held} (${toPercent(
-      course.attendance.held,
-      course.attendance.attended
-    )}%)`;
+    const { type } = course;
+    const { code, name } = course.ref;
+    const attendance = `${course.attendance.attended}/${
+      course.attendance.held
+    } (${toPercent(course.attendance.held, course.attendance.attended)}%)`;
     const internalMarks = `${course.internalMarks.have}/${course.internalMarks.max}`;
-    text += `*Course*: ${name} *| Code*: ${code}
-        *Type*: ${type}
-        *Attendance*: ${attendance}
-        *Internal Marks*: ${internalMarks}
-        
+    text += `
+*Course*: ${name} *| Code*: ${code}
+*Type*: ${type}
+*Attendance*: ${attendance}
+*Internal Marks*: ${internalMarks}
 `;
   }
   return text;
-}
+};
 
 export const renderSchedule = (schedule) => {
   let text = "";
   text = `*------ Date: ${schedule.classes[0].startTime.substr(0, 10)} ------*
-  
+
 `;
   for (let i = 0; i < schedule.classes.length; i += 1) {
     const record = schedule.classes[i];
-    text += `*Course* :${record.course.name} 
+    text += `*Course* :${record.course.name}
 *Faculty Name* :${record.faculty}
 *Room* :${record.room}
 *Time* :${record.startTime.substr(11, 5)} - ${record.endTime.substr(11, 5)}
@@ -67,7 +65,7 @@ export const renderSemester = (semesters) => {
 `;
   for (let i = 1; i < semesters.semesters.length; i += 1) {
     const record = semesters.semesters[i];
-    text += `*Semester* :${record.name} 
+    text += `*Semester* :${record.name}
 
 `;
   }
