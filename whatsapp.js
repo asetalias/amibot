@@ -51,42 +51,10 @@ export class WhatsappApiClient {
   /**
    *
    * @param {string} to
-   * @param {object} message
+   * @param {object} payload
    */
-  async sendInteractiveMessage(to, message) {
-    await this._send(to, "interactive", message);
-  }
-
-  // TODO: factor this factor out to `render.js`. The WhatsApp class should only have generalized methods
-  async sendDateList(to) {
-    const dates = new Array(5);
-    for (let i = 0; i < 5; i += 1) {
-      dates[i] = renderRelativeDate(i - 2);
-    }
-
-    await this._send(to, "interactive", {
-      type: "list",
-      header: {
-        type: "text",
-        text: "Date Selection",
-      },
-      body: {
-        text: "Select the Date",
-      },
-      action: {
-        button: "Options",
-        sections: [
-          {
-            title: "Dates",
-            rows: dates.map((dateString, index) => ({
-              id: index + 1,
-              title: dateString,
-              description: index === 2 ? "Today" : "",
-            })),
-          },
-        ],
-      },
-    });
+  async sendInteractiveMessage(to, payload) {
+    await this._send(to, "interactive", payload);
   }
 
   /**

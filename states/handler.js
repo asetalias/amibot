@@ -9,7 +9,7 @@ const handlerMap = new Map([
   [states.EXPECT_USERNAME, handlers.handleUsername],
   [states.EXPECT_PASSWORD, handlers.handlePassword],
   [states.LOGGED_IN, handlers.handleLoggedIn],
-  [states.USE_DATE, handlers.handleUseDate],
+  [states.EXPECT_SCHEDULE_DATE, handlers.handleUseDate],
 ]);
 
 /**
@@ -25,7 +25,16 @@ const handleEvent = async (ctx) => {
   // @todo can we do better handling here?
   console.error("invalid user state!");
   const updatedState = structuredClone(ctx.user);
-  updatedState.state = states.NEW_USER;
+  // @todo verify the validity of these types
+  ctx.bot.sendMessage(
+    ctx.payload.sender,
+    "Invalid state detected. Resolving. Try again. Apologies for inconvenience."
+  );
+  if (updatedState.user?.amizoneCredentials !== null) {
+    updatedState.state = states.LOGGED_IN;
+  } else {
+    updatedState.state = states.NEW_USER;
+  }
   return updatedState;
 };
 

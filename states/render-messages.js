@@ -1,3 +1,5 @@
+import { renderRelativeDate } from "../utils.js";
+
 /**
  * Renders and returns the attendance message.
  *
@@ -118,7 +120,7 @@ export const renderAmizoneMenu = () => ({
           },
           {
             id: "5",
-            title: "Menu",
+            title: "Fill Faculty Feedback",
           },
           {
             id: "6",
@@ -129,3 +131,35 @@ export const renderAmizoneMenu = () => ({
     ],
   },
 });
+
+export const renderClassScheduleDateList = () => {
+  const dates = new Array(5);
+  for (let i = 0; i < 5; i += 1) {
+    dates[i] = renderRelativeDate(i - 2);
+  }
+
+  return {
+    type: "list",
+    header: {
+      type: "text",
+      text: "Date Selection",
+    },
+    body: {
+      text: "Select the Date",
+    },
+    action: {
+      button: "Options",
+      sections: [
+        {
+          title: "Dates",
+          rows: dates.map((dateString, index) => ({
+            id: index + 1,
+            title: dateString,
+            description: index === 2 ? "Today" : "",
+          })),
+        },
+      ],
+    },
+  };
+};
+
