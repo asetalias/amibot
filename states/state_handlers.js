@@ -140,15 +140,6 @@ const loggedInMessageMap = new Map([
   ],
   [
     loggedInOptions.GET_SCHEDULE,
-    async (ctx) =>
-      // const schedule = await newAmizoneClient(
-      //   ctx
-      // ).amizoneServiceGetClassSchedule(2022,7,19); //@todo add date feature
-      //  console.log(schedule.data);
-      // return [true, renderSchedule(schedule.data)];
-      // updatedUser.state = states.EXPECT_SCHEDULE_DATE;
-      // @todo do things the right way: factor out the "list" response.
-      [true, renderClassScheduleDateList()],
   ],
   [
     loggedInOptions.GET_COURSES,
@@ -174,7 +165,6 @@ const loggedInMessageMap = new Map([
         const semesters = await newAmizoneClient(
           ctx
         ).amizoneServiceGetSemesters();
-        console.log(semesters.data);
         return [true, renderSemester(semesters.data)];
       } catch (err) {
         // catch invalid credential?
@@ -209,10 +199,11 @@ export const handleLoggedIn = async (ctx) => {
   }
 
   if (!loggedInMessageMap.has(normalizedMessage)) {
-    // TODO: remove console log
-    console.log("invalid opt");
     // TODO: send a more helpful message...
-    await ctx.bot.sendMessage(payload.sender, "invalid opt...");
+    await ctx.bot.sendMessage(
+      payload.sender,
+      "Invalid option selected. Try again?"
+    );
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
     return updatedUser;
   }
@@ -251,13 +242,9 @@ export const handleUseDate = async (ctx) => {
   if (Date.parse(message)) {
     try {
       const date = message.split("-");
-      console.log(date[0]);
       const schedule = await newAmizoneClient(
         ctx
       ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
-      // TODO: remove console log
-      console.log("fetched scheduled: ", schedule.data);
-
       if (schedule.data.classes.length > 0) {
         await ctx.bot.sendMessage(
           payload.sender,
