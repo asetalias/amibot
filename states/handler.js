@@ -9,7 +9,11 @@ const handlerMap = new Map([
   [states.EXPECT_USERNAME, handlers.handleUsername],
   [states.EXPECT_PASSWORD, handlers.handlePassword],
   [states.LOGGED_IN, handlers.handleLoggedIn],
-  [states.EXPECT_SCHEDULE_DATE, handlers.handleUseDate],
+  [states.EXPECT_SCHEDULE_DATE, handlers.handleExpectScheduleDate],
+  [
+    states.EXPECT_FACULTY_FEEDBACK_SPEC,
+    handlers.handleExpectFacultyFeedbackSpec,
+  ],
 ]);
 
 /**

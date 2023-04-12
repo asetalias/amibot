@@ -97,7 +97,7 @@ export const renderAmizoneMenu = () => ({
     text: "Select an Option",
   },
   action: {
-    button: "Options",
+    button: "Menu",
     sections: [
       {
         title: "Options",
@@ -121,6 +121,7 @@ export const renderAmizoneMenu = () => ({
           {
             id: "5",
             title: "Fill Faculty Feedback",
+            description: "Submit feedback for all faculty, in one go 🚀",
           },
           {
             id: "6",
@@ -163,3 +164,18 @@ export const renderClassScheduleDateList = () => {
   };
 };
 
+export const renderFacultyFeedbackInstructions =
+  () => `This method will submit feedback for *all* your faculty in a single step.
+
+Reply with _cancel_ to abort this operation, or with details in the following format:
+_*{Score} {Query score} {Comment}*_
+
+where
+→ *Score* is a 1-5 score used for most feedback points (higher is better)
+→ *Query score* is a 1-3 score used for query feedback (higher is better)
+→ *Comment* is a remark that will be sent with the feedback
+
+Please note that the same scores and comments will be used for all faculties with pending feedbacks.`;
+
+export const renderFacultyFeedbackConfirmaion = (filledFor) =>
+  `Faculty feedback has been filled for ${filledFor} faculties.`;
