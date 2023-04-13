@@ -175,6 +175,9 @@ where
 → *Query score* is a 1-3 score used for query feedback (higher is better)
 → *Comment* is a remark that will be sent with the feedback
 
+Example:
+_*5 3 Taught us well*_
+
 Please note that the same scores and comments will be used for all faculties with pending feedbacks.`;
 
 export const renderFacultyFeedbackConfirmaion = (filledFor) =>
