@@ -142,7 +142,7 @@ const loggedInMessageMap = new Map([
   ],
   [
     loggedInOptions.GET_SCHEDULE,
-    async (ctx) => [
+    async (_ctx) => [
       true,
       renderClassScheduleDateList(),
       states.EXPECT_SCHEDULE_DATE,
@@ -181,7 +181,7 @@ const loggedInMessageMap = new Map([
   ],
   [
     loggedInOptions.FILL_FACULTY_FEEDBACK,
-    async (ctx) => [
+    async (_ctx) => [
       true,
       renderFacultyFeedbackInstructions(),
       states.EXPECT_FACULTY_FEEDBACK_SPEC,
@@ -228,9 +228,8 @@ export const handleLoggedIn = async (ctx) => {
   if (!success) {
     await ctx.bot.sendMessage(
       payload.sender,
-      "Unsuccessful. Either Amizone is down or you need to login again."
+      "Unsuccessful. Either Amizone is down or you need to login again (hint: menu has a _logout_ option)"
     );
-    await ctx.bot.sendMessage(payload.sender, renderUsernamePrompt());
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
     return updatedUser;
   }
