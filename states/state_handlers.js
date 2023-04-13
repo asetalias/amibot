@@ -9,6 +9,9 @@ import {
   renderWelcomeMessage,
   renderUsernamePrompt,
   renderPasswordPrompt,
+  renderClassScheduleDateList,
+  renderFacultyFeedbackInstructions,
+  renderFacultyFeedbackConfirmaion,
 } from "./render-messages.js";
 import { firstNonEmpty } from "../utils.js";
 
@@ -114,7 +117,7 @@ const loggedInOptions = {
   GET_SCHEDULE: "class schedule",
   GET_COURSES: "courses",
   GET_SEMESTERS: "semesters",
-  GET_MENU: "menu",
+  FILL_FACULTY_FEEDBACK: "fill faculty feedback",
 };
 
 /**
@@ -122,7 +125,7 @@ const loggedInOptions = {
  * that is rendered to the client.
  * @type {Map<string, (BotHandlerContext) => Promise<[boolean, string]>>}
  */
-const optionsMap = new Map([
+const loggedInMessageMap = new Map([
   [
     loggedInOptions.GET_ATTENDANCE,
     async (ctx) => {
@@ -139,15 +142,11 @@ const optionsMap = new Map([
   ],
   [
     loggedInOptions.GET_SCHEDULE,
-    async (ctx) =>
-      // const schedule = await newAmizoneClient(
-      //   ctx
-      // ).amizoneServiceGetClassSchedule(2022,7,19); //@todo add date feature
-      //  console.log(schedule.data);
-      // return [true, renderSchedule(schedule.data)];
-      // updatedUser.state = states.USE_DATE;
-      // @todo do things the right way: factor out the "list" response.
-      [true, "list"],
+    async (_ctx) => [
+      true,
+      renderClassScheduleDateList(),
+      states.EXPECT_SCHEDULE_DATE,
+    ],
   ],
   [
     loggedInOptions.GET_COURSES,
@@ -173,7 +172,6 @@ const optionsMap = new Map([
         const semesters = await newAmizoneClient(
           ctx
         ).amizoneServiceGetSemesters();
-        console.log(semesters.data);
         return [true, renderSemester(semesters.data)];
       } catch (err) {
         // catch invalid credential?
@@ -181,7 +179,14 @@ const optionsMap = new Map([
       }
     },
   ],
-  [loggedInOptions.GET_MENU, async (_ctx) => [true, ""]],
+  [
+    loggedInOptions.FILL_FACULTY_FEEDBACK,
+    async (_ctx) => [
+      true,
+      renderFacultyFeedbackInstructions(),
+      states.EXPECT_FACULTY_FEEDBACK_SPEC,
+    ],
+  ],
 ]);
 
 /**
@@ -198,60 +203,60 @@ export const handleLoggedIn = async (ctx) => {
   ).toLowerCase();
   const updatedUser = structuredClone(ctx.user);
 
-  switch (message.toLowerCase()) {
-    case "logout":
-      updatedUser.amizoneCredentials = { username: "", password: "" };
-      updatedUser.state = states.NEW_USER;
-      await ctx.bot.sendMessage(payload.sender, "Logged Out!");
-      return updatedUser;
-    default:
-      if (optionsMap.has(message)) {
-        const [success, text] = await optionsMap.get(message)(ctx);
-        if (success) {
-          if (text === "list") {
-            await ctx.bot.sendDateList(payload.sender);
-            updatedUser.state = states.USE_DATE;
-          } else {
-            await ctx.bot.sendMessage(payload.sender, text);
-            await ctx.bot.sendInteractiveMessage(
-              payload.sender,
-              renderAmizoneMenu()
-            );
-          }
+  const normalizedMessage = message.toLowerCase();
 
-          return updatedUser;
-        }
-        await ctx.bot.sendMessage(
-          payload.sender,
-          "unsuccessful. maybe try logging in again?"
-        );
-        await ctx.bot.sendMessage(payload.sender, renderUsernamePrompt());
-        updatedUser.state = states.EXPECT_USERNAME;
-        return updatedUser;
-      }
-      // TODO: remove console log
-      console.log("invalid opt");
-      // TODO: send a more helpful message...
-      await ctx.bot.sendMessage(payload.sender, "invalid opt...");
-      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
-      return updatedUser;
+  if (normalizedMessage === "logout") {
+    updatedUser.amizoneCredentials = { username: "", password: "" };
+    updatedUser.state = states.NEW_USER;
+    await ctx.bot.sendMessage(payload.sender, "Logged Out!");
+    return updatedUser;
   }
+
+  if (!loggedInMessageMap.has(normalizedMessage)) {
+    // TODO: send a more helpful message...
+    await ctx.bot.sendMessage(
+      payload.sender,
+      "Invalid option selected. Try again?"
+    );
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+    return updatedUser;
+  }
+
+  const [success, output, newState] = await loggedInMessageMap.get(
+    normalizedMessage
+  )(ctx);
+  if (!success) {
+    await ctx.bot.sendMessage(
+      payload.sender,
+      "Unsuccessful. Either Amizone is down or you need to login again (hint: menu has a _logout_ option)"
+    );
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+    return updatedUser;
+  }
+
+  if (typeof output === "string") {
+    await ctx.bot.sendMessage(payload.sender, output);
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+  }
+
+  if (typeof output === "object") {
+    await ctx.bot.sendInteractiveMessage(payload.sender, output);
+  }
+
+  updatedUser.state = newState ?? states.LOGGED_IN;
+  return updatedUser;
 };
 
-export const handleUseDate = async (ctx) => {
+export const handleExpectScheduleDate = async (ctx) => {
   const { payload } = ctx;
   const message = firstNonEmpty(payload.interactive.title, payload.textBody);
   const updatedUser = structuredClone(ctx.user);
   if (Date.parse(message)) {
     try {
       const date = message.split("-");
-      console.log(date[0]);
       const schedule = await newAmizoneClient(
         ctx
       ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
-      // TODO: remove console log
-      console.log("fetched scheduled: ", schedule.data);
-
       if (schedule.data.classes.length > 0) {
         await ctx.bot.sendMessage(
           payload.sender,
@@ -273,5 +278,77 @@ export const handleUseDate = async (ctx) => {
     .sendMessage(ctx.payload.sender, "invalid date!")
     .catch((err) => console.error("failed to send message to WA: ", err));
   await ctx.bot.sendDateList(payload.sender);
+  return updatedUser;
+};
+
+export const handleExpectFacultyFeedbackSpec = async (ctx) => {
+  const { payload } = ctx;
+  /** @type {String} */
+  const message = firstNonEmpty(payload.interactive.title, payload.textBody);
+  const updatedUser = structuredClone(ctx.user);
+
+  if (message.toLowerCase().trim() === "cancel") {
+    await ctx.bot.sendMessage(payload.sender, "Cancelled.");
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+    updatedUser.state = states.LOGGED_IN;
+    return updatedUser;
+  }
+
+  const [ratingStr, queryRatingStr, ...commentParts] = message.split(" ");
+  const comment = commentParts.join(" ").trim();
+  const [rating, queryRating] = [
+    parseInt(ratingStr, 10),
+    parseInt(queryRatingStr, 10),
+  ];
+  if (
+    Number.isNaN(rating) ||
+    Number.isNaN(queryRating) ||
+    comment.length === 0
+  ) {
+    await ctx.bot.sendMessage(
+      payload.sender,
+      "Invalid input. Please try again."
+    );
+    return updatedUser;
+  }
+
+  if (rating > 5 || rating < 1) {
+    await ctx.bot.sendMessage(
+      payload.sender,
+      "1 <= rating <= 5. Please try again."
+    );
+    return updatedUser;
+  }
+  if (queryRating > 3 || queryRating < 1) {
+    await ctx.bot.sendMessage(
+      payload.sender,
+      "1 <= queryRating <= 3. Please try again."
+    );
+    return updatedUser;
+  }
+
+  try {
+    const feedback = await newAmizoneClient(
+      ctx
+    ).amizoneServiceFillFacultyFeedback(rating, queryRating, comment);
+    if (feedback.data.filledFor === 0) {
+      await ctx.bot.sendMessage(
+        payload.sender,
+        "No feedback to fill at the moment"
+      );
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+      updatedUser.state = states.LOGGED_IN;
+      return updatedUser;
+    }
+    await ctx.bot.sendMessage(
+      payload.sender,
+      renderFacultyFeedbackConfirmaion(feedback.data.filledFor)
+    );
+    await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+    updatedUser.state = states.LOGGED_IN;
+  } catch (err) {
+    // ? catch invalid credential
+    console.error(`error while processing req: ${err}`);
+  }
   return updatedUser;
 };

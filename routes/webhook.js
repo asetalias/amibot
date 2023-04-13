@@ -20,9 +20,6 @@ export default async function (fastify, opts) {
 
     const payload = parseWebhookPayload(req.body);
 
-    // TODO: remove console log
-    console.log(`payload: ${JSON.stringify(payload)}`);
-
     if (payload.subject !== "whatsapp_business_account") {
       res.code(404);
       return {};
@@ -39,10 +36,6 @@ export default async function (fastify, opts) {
     }
 
     const [exists, user] = await getUser(payload.sender, db);
-    if (!exists) {
-      // TODO: remove console log
-      console.log("new user!");
-    }
 
     const context = {
       db,
