@@ -1,3 +1,4 @@
+import { V1AttendanceState } from "amizone_api";
 import { renderRelativeDate } from "../utils.js";
 
 /**
@@ -43,17 +44,32 @@ export const renderCourses = (courses) => {
   return text;
 };
 
+const ATTENDANCE_STATE_MAP = new Map([
+  [`${V1AttendanceState.Present}`, "🟢"],
+  [`${V1AttendanceState.Absent}`, "🔴"],
+  [`${V1AttendanceState.Pending}`, "🟠"],
+]);
+
+/**
+ * @param {import("amizone_api").V1ScheduledClasses} schedule
+ */
 export const renderSchedule = (schedule) => {
   let text = "";
-  text = `*------ Date: ${schedule.classes[0].startTime.substr(0, 10)} ------*
+  text = `*------ Date: ${schedule.classes[0].startTime.substring(
+    0,
+    10
+  )} ------*
 
 `;
   for (let i = 0; i < schedule.classes.length; i += 1) {
     const record = schedule.classes[i];
-    text += `*Course* :${record.course.name}
-*Faculty Name* :${record.faculty}
-*Room* :${record.room}
-*Time* :${record.startTime.substr(11, 5)} - ${record.endTime.substr(11, 5)}
+    text += `*Course*: ${record.course.name}
+*Faculty Name*: ${record.faculty}
+*Room*: ${record.room}
+*Time*: ${record.startTime.substring(11, 16)} - ${record.endTime.substring(
+      11,
+      16
+    )} | *Status*: ${ATTENDANCE_STATE_MAP.get(record.attendance) ?? "⚪"}
 
 `;
   }
