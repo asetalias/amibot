@@ -1,4 +1,4 @@
-import * as handlers from "./state_handlers.js";
+import * as handlers from "./state-handlers.js";
 import { states } from "./states.js";
 
 /**
@@ -9,10 +9,10 @@ const handlerMap = new Map([
   [states.EXPECT_USERNAME, handlers.handleExpectUsername],
   [states.EXPECT_PASSWORD, handlers.handleExpectPassword],
   [states.LOGGED_IN, handlers.handleLoggedIn],
-  [states.EXPECT_SCHEDULE_DATE, handlers.handleExpectScheduleDate],
+  [states.EXPECT_SCHEDULE_DATE, handlers.handleScheduleDateInput],
   [
     states.EXPECT_FACULTY_FEEDBACK_SPEC,
-    handlers.handleExpectFacultyFeedbackSpec,
+    handlers.handleFacultyFeedbackRating,
   ],
 ]);
 

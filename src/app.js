@@ -3,8 +3,8 @@ import "dotenv/config";
 import * as path from "path";
 import AutoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
-import * as database from "./database.js";
 import fastifySensible from "@fastify/sensible";
+import * as database from "./database.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

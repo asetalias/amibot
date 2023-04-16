@@ -1,5 +1,5 @@
-import { getUser, updateUser } from "../persist.js";
-import handler from "../states/base_handler.js";
+import { getBotUser, updateBotUser } from "../user-store.js";
+import botHandler from "../states/base-handler.js";
 import { parseWebhookPayload, WhatsappApiClient } from "../whatsapp.js";
 
 const META_API_TOKEN = process.env.WHATSAPP_TOKEN;
@@ -11,7 +11,6 @@ const WEBHOOK_VERIFICATION_TOKEN = process.env.VERIFY_TOKEN;
  * @returns {Promise<void>}
  */
 export default async function (fastify, opts) {
-  // Accepts POST requests at /webhook endpoint
   fastify.post("/webhook", async (req, res) => {
     const { /** @type {App.Collection} */ db } = opts;
     if (db === undefined) {
@@ -25,17 +24,18 @@ export default async function (fastify, opts) {
       return {};
     }
 
+    // If the Whatsapp payload contains none of a text body, button text or an interactive "type", return immediately since we have nothing to do.
     if (
       !payload.textBody &&
       !payload.button.text &&
       !payload.interactive.type
     ) {
-      // TODO: respond with an "invalid message" response
+      // TODO: Reply to the user with an "invalid message" response
       res.code(200);
       return {};
     }
 
-    const [exists, user] = await getUser(payload.sender, db);
+    const [userExists, user] = await getBotUser(payload.sender, db);
 
     const context = {
       db,
@@ -44,9 +44,10 @@ export default async function (fastify, opts) {
       user,
     };
 
-    const updatedUser = await handler(context);
-    if (!exists || updatedUser.state !== user.state) {
-      await updateUser(updatedUser, db);
+    const updatedUser = await botHandler(context);
+    // Update user state if it needs to be reconciled
+    if (!userExists || updatedUser.state !== user.state) {
+      await updateBotUser(updatedUser, db);
     }
     res.code(200);
     return {};

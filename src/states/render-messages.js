@@ -1,5 +1,34 @@
 import { V1AttendanceState } from "amizone_api";
-import { renderRelativeDate } from "../utils.js";
+
+// === Utilities ===
+
+const OFFSET_IST = 330;
+const MINUTE_TO_MS = 60_000;
+const DAY_TO_MINUTE = 24 * 60;
+const currentTzOffset = new Date().getTimezoneOffset();
+
+/**
+ * @param {Date} date
+ * @returns {Date}
+ */
+const dateToIST = (date) =>
+  new Date(date.getTime() + (OFFSET_IST - currentTzOffset) * MINUTE_TO_MS);
+
+/**
+ * Render a relative date, in days from NOW, to a "YYYY-MM-DD" format.
+ * @param {number} d
+ * @returns {string}
+ */
+const renderRelativeDate = (d) => {
+  const relativeDate = new Date(
+    dateToIST(new Date()).getTime() + d * DAY_TO_MINUTE * MINUTE_TO_MS
+  );
+  return `${relativeDate.getFullYear()}-${relativeDate.getMonth() + 1
+    }-${relativeDate.getDate()}`;
+};
+
+
+// === End of utilities ===
 
 /**
  * Renders and returns the attendance message.
@@ -30,9 +59,8 @@ export const renderCourses = (courses) => {
     const course = courses.courses[i];
     const { type } = course;
     const { code, name } = course.ref;
-    const attendance = `${course.attendance.attended}/${
-      course.attendance.held
-    } (${toPercent(course.attendance.held, course.attendance.attended)}%)`;
+    const attendance = `${course.attendance.attended}/${course.attendance.held
+      } (${toPercent(course.attendance.held, course.attendance.attended)}%)`;
     const internalMarks = `${course.internalMarks.have}/${course.internalMarks.max}`;
     text += `
 *Course*: ${name} *| Code*: ${code}

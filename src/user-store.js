@@ -5,7 +5,7 @@ import { DEFAULT_STATE } from "./states/states.js";
  * @param {App.Collection} db
  * @returns Promise<[boolean, User]>
  */
-export const getUser = async (phoneNumber, db) => {
+export const getBotUser = async (phoneNumber, db) => {
   const userEntry = await db.findOne({ phone: phoneNumber });
   if (userEntry === null) {
     return [
@@ -38,7 +38,7 @@ export const getUser = async (phoneNumber, db) => {
  * @param {User} newState
  * @param {App.Collection} db
  */
-export const updateUser = async (newState, db) => {
+export const updateBotUser = async (newState, db) => {
   await db.updateOne(
     { phone: newState.phone },
     {

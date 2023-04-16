@@ -1,5 +1,4 @@
 import axios from "axios";
-import { renderRelativeDate } from "./utils.js";
 
 const API_VERSION = "v12.0";
 const API_BASE_URL = `https://graph.facebook.com`;
