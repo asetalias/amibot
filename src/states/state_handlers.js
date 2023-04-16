@@ -13,7 +13,7 @@ import {
   renderFacultyFeedbackInstructions,
   renderFacultyFeedbackConfirmaion,
 } from "./render-messages.js";
-import { firstNonEmpty } from "../utils.js";
+import { firstNonEmpty, newAmizoneClient } from "../utils.js";
 
 /**
  * @param {string} username
@@ -21,12 +21,7 @@ import { firstNonEmpty } from "../utils.js";
  * @returns {Promise<boolean>}
  */
 const validateAmizoneCredentials = async (username, password) => {
-  const amizoneClient = new amizone.AmizoneServiceApi(
-    new amizone.Configuration({
-      username,
-      password,
-    })
-  );
+  const amizoneClient = newAmizoneClient({ username, password });
   try {
     await amizoneClient.amizoneServiceGetSemesters();
     return true;
@@ -61,7 +56,7 @@ export const handleNewUser = async (ctx) => {
  * @param {Context} ctx
  * @returns {Promise<User>}
  */
-export const handleUsername = async (ctx) => {
+export const handleExpectUsername = async (ctx) => {
   const { payload } = ctx;
   const updatedUser = structuredClone(ctx.user);
   updatedUser.state = states.EXPECT_PASSWORD;
@@ -74,7 +69,7 @@ export const handleUsername = async (ctx) => {
  * @param {Context} ctx
  * @returns {Promise<User>}
  */
-export const handlePassword = async (ctx) => {
+export const handleExpectPassword = async (ctx) => {
   const { payload } = ctx;
   const updatedUser = structuredClone(ctx.user);
   const password = payload.textBody;
@@ -98,20 +93,6 @@ export const handlePassword = async (ctx) => {
   return updatedUser;
 };
 
-/**
- * @param {BotHandlerContext} ctx
- * @returns AmizoneServiceApi
- */
-const newAmizoneClient = (ctx) => {
-  const { username, password } = ctx.user.amizoneCredentials;
-  return new amizone.AmizoneServiceApi(
-    new amizone.Configuration({
-      username,
-      password,
-    })
-  );
-};
-
 const loggedInOptions = {
   GET_ATTENDANCE: "attendance",
   GET_SCHEDULE: "class schedule",
@@ -130,9 +111,7 @@ const loggedInMessageMap = new Map([
     loggedInOptions.GET_ATTENDANCE,
     async (ctx) => {
       try {
-        const attendance = await newAmizoneClient(
-          ctx
-        ).amizoneServiceGetAttendance();
+        const attendance = await newAmizoneClient(ctx.user).amizoneServiceGetAttendance();
         return [true, renderAttendance(attendance.data)];
       } catch (err) {
         // catch invalid credential?
@@ -152,7 +131,7 @@ const loggedInMessageMap = new Map([
     loggedInOptions.GET_COURSES,
     async (ctx) => {
       try {
-        const amizoneClient = newAmizoneClient(ctx);
+        const amizoneClient = newAmizoneClient(ctx.user);
         const semesters = await amizoneClient.amizoneServiceGetSemesters();
         const currentSemester = parseInt(semesters.data.semesters[0].name, 10);
         // @todo Send a response to ask the user about which semester's courses he/she wants
@@ -169,9 +148,7 @@ const loggedInMessageMap = new Map([
     loggedInOptions.GET_SEMESTERS,
     async (ctx) => {
       try {
-        const semesters = await newAmizoneClient(
-          ctx
-        ).amizoneServiceGetSemesters();
+        const semesters = await newAmizoneClient(ctx.user).amizoneServiceGetSemesters();
         return [true, renderSemester(semesters.data)];
       } catch (err) {
         // catch invalid credential?
@@ -254,9 +231,7 @@ export const handleExpectScheduleDate = async (ctx) => {
   if (Date.parse(message)) {
     try {
       const date = message.split("-");
-      const schedule = await newAmizoneClient(
-        ctx
-      ).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
+      const schedule = await newAmizoneClient(ctx.user).amizoneServiceGetClassSchedule(date[0], date[1], date[2]); // @todo add date feature
       if (schedule.data.classes.length > 0) {
         await ctx.bot.sendMessage(
           payload.sender,
@@ -328,9 +303,7 @@ export const handleExpectFacultyFeedbackSpec = async (ctx) => {
   }
 
   try {
-    const feedback = await newAmizoneClient(
-      ctx
-    ).amizoneServiceFillFacultyFeedback(rating, queryRating, comment);
+    const feedback = await newAmizoneClient(ctx.user).amizoneServiceFillFacultyFeedback(rating, queryRating, comment);
     if (feedback.data.filledFor === 0) {
       await ctx.bot.sendMessage(
         payload.sender,

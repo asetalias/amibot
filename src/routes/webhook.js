@@ -1,5 +1,5 @@
 import { getUser, updateUser } from "../persist.js";
-import handler from "../states/handler.js";
+import handler from "../states/base_handler.js";
 import { parseWebhookPayload, WhatsappApiClient } from "../whatsapp.js";
 
 const META_API_TOKEN = process.env.WHATSAPP_TOKEN;

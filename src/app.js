@@ -4,6 +4,7 @@ import * as path from "path";
 import AutoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import * as database from "./database.js";
+import fastifySensible from "@fastify/sensible";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -20,12 +21,9 @@ export default async function (fastify, opts) {
     database.close(client);
   });
 
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, "plugins"),
-    options: { ...opts },
+  // This plugins adds some utilities to handle http errors
+  fastify.register(fastifySensible, {
+    errorHandler: false,
   });
 
   // This loads all plugins defined in routes

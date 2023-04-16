@@ -17,7 +17,7 @@ To get an overview of the project, read the [README](README.md). Here are some r
 
 ## Getting started
 
-Check to see what [types of contributions](/contributing/types-of-contributions.md) we accept before making changes. Some of them don't even require writing a single line of code :sparkles:.
+Check to see what [types of contributions](./contributing/types-of-contributions.md) we accept before making changes. Some of them don't even require writing a single line of code :sparkles:.
 
 ### Issues
 

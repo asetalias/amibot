@@ -6,8 +6,8 @@ import { states } from "./states.js";
  */
 const handlerMap = new Map([
   [states.NEW_USER, handlers.handleNewUser],
-  [states.EXPECT_USERNAME, handlers.handleUsername],
-  [states.EXPECT_PASSWORD, handlers.handlePassword],
+  [states.EXPECT_USERNAME, handlers.handleExpectUsername],
+  [states.EXPECT_PASSWORD, handlers.handleExpectPassword],
   [states.LOGGED_IN, handlers.handleLoggedIn],
   [states.EXPECT_SCHEDULE_DATE, handlers.handleExpectScheduleDate],
   [
@@ -21,7 +21,7 @@ const handlerMap = new Map([
  * @param {BotHandlerContext} ctx
  * @returns {Promise<User>}
  */
-const handleEvent = async (ctx) => {
+const handle = async (ctx) => {
   if (handlerMap.has(ctx.user.state)) {
     const handler = handlerMap.get(ctx.user.state);
     return handler(ctx);
@@ -42,4 +42,4 @@ const handleEvent = async (ctx) => {
   return updatedState;
 };
 
-export default handleEvent;
+export default handle;
