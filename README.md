@@ -1,70 +1,44 @@
-# Amibot
+# Amibot: Your Personal Amizone Assistant
+
+[![WhatsApp](https://img.shields.io/static/v1?logo=Whatsapp&logoColor=fff&labelColor=25D366&label=Amibot&message=⬅️%20Click%20to%20use%20&color=50524f)][whatsapp]
 
 <!-- No tests :( ) -->
 <!-- ![Tests](https://img.shields.io/github/workflow/status/ditsuke/go-amizone/tests?label=tests&logo=github) -->
 [![Issues](https://img.shields.io/github/issues/asetalias/amibot?logo=github)][issues]
 [![License](https://img.shields.io/github/license/asetalias/amibot)](./LICENSE)
-
-[![WhatsApp](https://img.shields.io/badge/-Bot-25D366?logo=Whatsapp&logoColor=fff)][whatsapp]
 [![NodeJS](https://img.shields.io/badge/-JS-F7DF1E?logo=nodejs&logoColor=fff)][nodejs]
 [![MongoDB Logo](https://img.shields.io/badge/-MongoDB-47A248?logo=MongoDB&logoColor=fff)][mongodb]
 [![Fastify](https://img.shields.io/badge/-Fastify.io-000000?logo=Fastify&logoColor=fff)][fastify]
 
-**Amibot** is a simple but robust bot that can access the contents from Amity Student Portal - *Amizone* and display them right in WhatsApp itself.
+Tired of slow and unreliable access to your Amity University student portal? Introducing Amibot, the chat bot that allows you to easily access all your important information on WhatsApp. With Amibot, you can quickly view your grades, attendance, class schedule, and more without ever having to log in to the Amizone website.
 
----
+## Using Amibot
 
-## What were the various issues which were being faced by the students ?
+Either deploy your own instance, or use the official Amibot instance by clicking the badge on the top.
 
-Amizone is *the* student portal for [Amity University](https://www.amity.edu/). It's indispensable for the students as they can
-access their grades, attendance, class schedule and other information. But there is a catch: it's buggy, slow and goes down all the
-time! Students have made a slew of alternative apps and tools to access the portal over the years -- including mobile
-apps, but only for Android which too weren't up to the mark.
+## Features
 
-## What was the solution ?
+- **Interactive and easy-to-use interface:** Amibot provides a simple and intuitive interface on WhatsApp, allowing you to access your information with just a few taps.
+- **Access to attendance and class schedule:** Amibot already provides information on your attendance and classes.
+- **Faculty feedback:** Amibot targets a big pain point in the average Amity student's life: Faculty feedback. It can automate the process for you, filling feedback for all your faculties at once.
+- **Works even when network connectivity is limited:** Amibot works even when you have limited connectivity, allowing you to access your information anywhere, even on Campus :smile:!
+  Since Amibot uses WhatsApp, you can see previously queried information even when you are offline.
+- **Platform independent:** Got an iPhone? No problem. Use Amibot on anything that runs WhatsApp.
 
-We were presented with the same problem and thought of making a proper app for both Android and iOS. But then, after many discussions, we arrived at a proper solution and that was to make a WhatsApp Bot because hey, WhatsApp is used by almost everyone on daily purpose, so why not make a bot that is integrated with its API and serves the purpose without having any need to install another app!
+## What Makes Amibot Different?
 
-## Introducing Amibot
+- **No need to install an additional app:** Unlike other solutions, Amibot does not require you to install a separate app on your device. You can simply use the WhatsApp app that you already have installed.
+- **Lightweight and efficient:** Amibot uses a textual format for data, requiring less bandwidth and making it more efficient than other solutions. It will even work on 2G networks!
+- **Open-source:** Review the code, contribute to the project or even host your own instance.
 
-- A WhatsApp chat bot that allows students to access Amizone's functionalities right on their finger tips!
-- Integrates WhatsApp API by Meta allowing it to run on any device using WhatsApp
+## Future Plans
 
-## Some of its features -
+- **Add more features and integrations:** We're constantly working on adding new features and integrations to improve the user experience.
+- **Allow students to schedule daily delivery of class schedules and attendance information:** In the future, Amibot _might_ allow you to schedule daily delivery of your class schedule and attendance information via a WhatsApp message.
 
-- ***Interactive*** - User experience is simple, clean and easy to use with buttons and lists
-- ***Practical*** - Allows accessiblity of data even when network is congested
-- ***Lightweight*** - Requires less bandwidth as data is in textual format
-- ***Platform Independent*** - Integrates WhatsApp API so that it can be accessed on any platform with WhatsApp (Android, iOS, Windows)
-- ***Privacy*** - Open sourced, thus privacy is maintained
-- **No addtional app is needed to be installed to use the bot!**
+## Contributions
 
-## Technologies Used -
-
-- WhatsApp Bussiness Cloud API
-- Amizone API
-- JavaScript
-- Fastify.io
-- MongoDB
-
-## Salient Features -
-
-- Allows to access *Attendance, Class Schedule, Examination Schedule, Courses* and much more
-- A simple and interactive UX
-- Uses state flow model to track each student's current state
-- Works even when connectivity is limited
-- Easy Integration
-
-## What's next for Amibot ?
-
-- Integrating more features provided by the Amizone API
-- Allowing students to schedule daily delivery of Class Schedule and Attendance via WhatsApp message
-
-## How can I contribute to this project?
-
-Contributions to the project are welcome! If you have a bug or feature request, please open an issue on
-[GitHub][github]. Read the [Contribution Guide](./CONTRIBUTING.md) for more information, including
-how to run the project locally.
+Contributions to the project are welcome! If you have a bug or feature request, please open an issue on [GitHub][github]. Read the [Contribution Guide](./CONTRIBUTING.md) for more information, including how to run the project locally.
 
 [github]: https://github.com/asetalias/amibot
 [issues]: https://github.com/asetalias/amibot/issues
