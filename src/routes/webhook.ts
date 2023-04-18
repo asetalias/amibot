@@ -1,18 +1,15 @@
 import { getBotUser, updateBotUser } from "../user-store.js";
+import { FastifyInstance } from "fastify";
 import botHandler from "../states/base-handler.js";
 import { parseWebhookPayload, WhatsappApiClient } from "../whatsapp.js";
+import getConfig from "../config.js";
+import { Collection } from "mongodb";
 
-const META_API_TOKEN = process.env.WHATSAPP_TOKEN;
-const WEBHOOK_VERIFICATION_TOKEN = process.env.VERIFY_TOKEN;
+const { metaApiToken, webhookVerificationToken } = getConfig();
 
-/**
- * @param {App.Fastify} fastify
- * @param {Object} opts
- * @returns {Promise<void>}
- */
-export default async function (fastify, opts) {
+export default async function (fastify: FastifyInstance, opts: { db?: Collection }) {
   fastify.post("/webhook", async (req, res) => {
-    const { /** @type {App.Collection} */ db } = opts;
+    const db = opts.db;
     if (db === undefined) {
       throw new Error("db not injected!");
     }
@@ -39,7 +36,7 @@ export default async function (fastify, opts) {
 
     const context = {
       db,
-      bot: new WhatsappApiClient(META_API_TOKEN, payload.botNumberId),
+      bot: new WhatsappApiClient(metaApiToken, payload.botNumberId),
       payload,
       user,
     };
@@ -57,18 +54,18 @@ export default async function (fastify, opts) {
   // TODO: MAJOR: The post endpoint needs webhook verification too!
   // Accepts GET requests at the /webhook endpoint. You need this URL to set up webhook initially.
   // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
-  fastify.get("/webhook", (req, res) => {
+  fastify.get("/webhook", (req: any, res) => {
     // Parse params from the webhook verification request
-    const queryMode = req.query["hub.mode"];
-    const queryToken = req.query["hub.verify_token"];
-    const queryChallenge = req.query["hub.challenge"];
+    const queryMode = req?.query["hub.mode"];
+    const queryToken = req?.query["hub.verify_token"];
+    const queryChallenge = req?.query["hub.challenge"];
 
     // Check if a token and mode were sent
     if (queryMode && queryToken) {
       // Check the mode and token sent are correct
       if (
         queryMode === "subscribe" &&
-        queryToken === WEBHOOK_VERIFICATION_TOKEN
+        queryToken === webhookVerificationToken
       ) {
         // Respond with 200 OK and challenge token from the request
         console.log("WEBHOOK_VERIFIED");

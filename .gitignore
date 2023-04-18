@@ -58,3 +58,5 @@ profile*
 *flamegraph*
 # Enviro Var
 .env
+
+/dist

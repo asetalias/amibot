@@ -5,14 +5,11 @@ import AutoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import fastifySensible from "@fastify/sensible";
 import * as database from "./database.js";
+import { FastifyInstance } from "fastify";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/**
- * @param {App.Fastify} fastify
- * @param {Object} opts
- */
-export default async function (fastify, opts) {
+export default async function (fastify: FastifyInstance, opts: object) {
   // TODO: handle error and log
   const [client, dbCollection] = await database.connect();
 

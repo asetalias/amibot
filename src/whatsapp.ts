@@ -1,15 +1,32 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 
 const API_VERSION = "v12.0";
 const API_BASE_URL = `https://graph.facebook.com`;
 
+export interface WhatsappPayload {
+  subject: string;
+  originService: string;
+  eventType: string;
+  sender: string;
+  botNumberId: string;
+  textBody: string;
+  button: {
+    text: string;
+    payload: string;
+  };
+  interactive: {
+    type: string,
+    title: string,
+    interactiveId: string,
+  },
+}
+
 export class WhatsappApiClient {
-  /**
-   * @param {string} apiKey
-   * @param {string} from
-   * @param {Object} config
-   */
-  constructor(apiKey, from, config = null) {
+  _apiKey: String;
+  _from: String;
+  _axios: AxiosInstance;
+
+  constructor(apiKey: string, from: string, config: { axios: AxiosInstance } | null = null) {
     this._apiKey = apiKey;
     this._from = from;
     this._axios = (() => {
@@ -20,13 +37,7 @@ export class WhatsappApiClient {
     })();
   }
 
-  /**
-   * @param {string} to
-   * @param {string} template
-   * @param {string} language
-   * @returns {Promise<void>}
-   */
-  async sendTemplate(to, template, language = "en") {
+  async sendTemplate(to: string, template: string, language: string = "en"): Promise<void> {
     // Changed from en_us to en
     await this._send(to, "template", {
       name: template,
@@ -36,36 +47,21 @@ export class WhatsappApiClient {
     });
   }
 
-  /**
-   * @param {string} to
-   * @param {string} message
-   * @returns {Promise<void>}
-   */
-  async sendMessage(to, message) {
+  async sendMessage(to: string, message: string): Promise<void> {
     await this._send(to, "text", {
       body: message,
     });
   }
 
-  /**
-   *
-   * @param {string} to
-   * @param {object} payload
-   */
-  async sendInteractiveMessage(to, payload) {
+  async sendInteractiveMessage(to: string, payload: object) {
     await this._send(to, "interactive", payload);
   }
 
   /**
-   * @param {string} to
-   * @param {"text"|"template"|"interactive"} type
-   * @param {object} value
-   * @returns {Promise<void>}
-   * @private
-   *
    * TODO: improve error handling flow
+   * @private
    */
-  async _send(to, type, value) {
+  async _send(to: string, type: "text" | "template" | "interactive", value: object): Promise<void> {
     await this._axios
       .post(
         `${API_BASE_URL}/${API_VERSION}/${this._from}/messages`,
@@ -90,18 +86,15 @@ export class WhatsappApiClient {
 }
 
 /**
- * @param {Object} body
- * @returns {Payload}
- *
  * TODO(refactor): replace destructuring with optional-chaining to make the code more readable.
  */
-export const parseWebhookPayload = (body) => {
+export const parseWebhookPayload = (body: any): WhatsappPayload => {
   // Ensure we don't try to destructure non-arrays as arrays.
-  const arraySafe = (val) => (Array.isArray(val) ? val : [{}]);
-  const objectSafe = (val) => (val !== undefined ? val : {});
+  const arraySafe = (val: any) => (Array.isArray(val) ? val : [{}]);
 
-  const { object: subject, entry: events } = body;
-  const [{ changes }] = arraySafe(events);
+  const subject = body?.object;
+  const events = body?.entry;
+  const changes = events?.[0]?.changes;
   const [
     {
       value: {
@@ -120,13 +113,12 @@ export const parseWebhookPayload = (body) => {
       interactive: interactiveObject,
     },
   ] = arraySafe(messages);
-  const { body: textBody } = objectSafe(textObject);
-  const { payload: buttonPayload, text: buttonText } = objectSafe(buttonObject);
-  const {
-    type: interactiveType,
-    button_reply: buttonReply,
-    list_reply: listReply,
-  } = objectSafe(interactiveObject);
+  const textBody = textObject?.body;
+  const buttonPayload = buttonObject?.payload;
+  const buttonText = buttonObject?.text;
+  const interactiveType = interactiveObject?.type;
+  const buttonReply = interactiveObject?.button_reply;
+  const listReply = interactiveObject?.list_reply;
 
   const interactiveElement = (() => {
     if (interactiveType === "button_reply") {

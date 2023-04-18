@@ -1,0 +1,11 @@
+{
+  "extends": "fastify-tsconfig",
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true,
+    "module": "ES2020"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

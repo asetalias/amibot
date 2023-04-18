@@ -1,10 +1,7 @@
 import * as handlers from "./state-handlers.js";
-import { states } from "./states.js";
+import { BotHandlerContext, User, states } from "./states.js";
 
-/**
- * @type {Map<string, (function(BotHandlerContext): Promise<User>)>}
- */
-const handlerMap = new Map([
+const handlerMap: Map<String, ((ctx: BotHandlerContext) => Promise<User>)> = new Map([
   [states.NEW_USER, handlers.handleNewUser],
   [states.EXPECT_USERNAME, handlers.handleExpectUsername],
   [states.EXPECT_PASSWORD, handlers.handleExpectPassword],
@@ -16,25 +13,19 @@ const handlerMap = new Map([
   ],
 ]);
 
-/**
- *
- * @param {BotHandlerContext} ctx
- * @returns {Promise<User>}
- */
-const handle = async (ctx) => {
-  if (handlerMap.has(ctx.user.state)) {
-    const handler = handlerMap.get(ctx.user.state);
+const handle = async (ctx: BotHandlerContext): Promise<User> => {
+  const handler = handlerMap.get(ctx.user.state);
+  if (handler !== undefined) {
     return handler(ctx);
   }
+
   // @todo can we do better handling here?
-  console.error("invalid user state!");
   const updatedState = structuredClone(ctx.user);
-  // @todo verify the validity of these types
   ctx.bot.sendMessage(
     ctx.payload.sender,
     "Invalid state detected. Resolving. Try again. Apologies for inconvenience."
   );
-  if (updatedState.user?.amizoneCredentials !== null) {
+  if (updatedState.amizoneCredentials !== null) {
     updatedState.state = states.LOGGED_IN;
   } else {
     updatedState.state = states.NEW_USER;
