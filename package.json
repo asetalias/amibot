@@ -1,24 +1,29 @@
 {
-  "name": "amizone-bot",
+  "name": "amibot",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
   "type": "module",
   "main": "app.js",
-  "types": "app.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "tap \"test/**/*.test.js\"",
-    "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js",
-    "lint": "eslint . --ext .js,.mjs,.jsx --quiet",
-    "fix": "eslint . --ext .js,.mjs,.jsx --quiet --fix",
-    "format": "prettier \"./**/*.{js,mjs}\" --write"
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
+    "lint": "eslint . --ext .js,.mjs,.ts --quiet",
+    "lint:fix": "eslint . --ext .js,.mjs,.ts --quiet --fix",
+    "fmt": "prettier \"./**/*.{js,mjs,ts}\" --write"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "amizone",
+    "whatsapp-bot"
+  ],
+  "author": "asetalias <asetalias1@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^4.1.0",
@@ -33,11 +38,16 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
-    "eslint": "^8.18.0",
-    "eslint-config-airbnb": "^19.0.4",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
+    "concurrently": "^8.0.1",
+    "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-prettier": "^4.0.0",
+    "fastify-tsconfig": "^1.0.1",
     "prettier": "^2.7.1",
-    "tap": "^16.1.0"
+    "tap": "^16.1.0",
+    "typescript": "^5.0.4"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "extends": "fastify-tsconfig",
+  "compilerOptions": {
+    "moduleResolution": "nodenext",
+    "outDir": "dist",
+    "sourceMap": true,
+    "module": "ES2020"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

@@ -1,21 +1,59 @@
-import { V1AttendanceState } from "amizone_api";
-import { renderRelativeDate } from "../utils.js";
+import {
+  V1AttendanceRecords,
+  V1AttendanceState,
+  V1Courses,
+  V1ScheduledClasses,
+  V1SemesterList,
+} from "amizone_api";
+
+// === Utilities ===
+
+const OFFSET_IST = 330;
+const MINUTE_TO_MS = 60_000;
+const DAY_TO_MINUTE = 24 * 60;
+const currentTzOffset = new Date().getTimezoneOffset();
+
+const dateToIST = (date: Date): Date =>
+  new Date(date.getTime() + (OFFSET_IST - currentTzOffset) * MINUTE_TO_MS);
+
+/**
+ * Render a relative date, in days from NOW, to a "YYYY-MM-DD" format.
+ * @param {number} d
+ * @returns {string}
+ */
+const renderRelativeDate = (d: number): string => {
+  const relativeDate = new Date(
+    dateToIST(new Date()).getTime() + d * DAY_TO_MINUTE * MINUTE_TO_MS
+  );
+  return `${relativeDate.getFullYear()}-${
+    relativeDate.getMonth() + 1
+  }-${relativeDate.getDate()}`;
+};
+
+const toFormattedPercent = (total: number, went: number) =>
+  ((went * 100) / total).toFixed(2);
+
+// === End of utilities ===
 
 /**
  * Renders and returns the attendance message.
- *
- * @param {import("amizone_api").V1AttendanceRecords} attendance
- * @returns string
  */
-export const renderAttendance = (attendance) => {
+export const renderAttendance = (attendance: V1AttendanceRecords) => {
+  if (attendance.records === undefined) {
+    return "";
+  }
+
   let text = "";
-  const toPercent = (total, went) => ((went * 100) / total).toFixed(2);
   for (let i = 0; i < attendance.records.length; i += 1) {
     const record = attendance.records[i];
-    text += `*Course*: ${record.course.name} *| Code*: ${record.course.code}
-  => ${record.attendance.attended}/${record.attendance.held} (${toPercent(
-      record.attendance.held,
-      record.attendance.attended
+    text += `*Course*: ${record.course?.name ?? "<Unknown>"} *| Code*: ${
+      record?.course?.code || "<Unknown>"
+    }
+  => ${record?.attendance?.attended}/${
+      record?.attendance?.held
+    } (${toFormattedPercent(
+      record?.attendance?.held ?? 0,
+      record?.attendance?.attended ?? 1
     )}%)
 
 `;
@@ -23,17 +61,24 @@ export const renderAttendance = (attendance) => {
   return text;
 };
 
-export const renderCourses = (courses) => {
-  let text = "";
-  const toPercent = (total, went) => ((went * 100) / total).toFixed(2);
+export const renderCourses = (courses: V1Courses) => {
+  let text = "⬇️  Courses  ⬇️ \n";
+  if (courses.courses === undefined) {
+    return text;
+  }
+
   for (let i = 0; i < courses.courses.length; i += 1) {
     const course = courses.courses[i];
     const { type } = course;
-    const { code, name } = course.ref;
-    const attendance = `${course.attendance.attended}/${
-      course.attendance.held
-    } (${toPercent(course.attendance.held, course.attendance.attended)}%)`;
-    const internalMarks = `${course.internalMarks.have}/${course.internalMarks.max}`;
+    const code = course.ref?.code;
+    const name = course.ref?.name;
+    const attendance = `${course?.attendance?.attended}/${
+      course?.attendance?.held
+    } (${toFormattedPercent(
+      course?.attendance?.held ?? 0,
+      course?.attendance?.attended ?? 1
+    )}%)`;
+    const internalMarks = `${course?.internalMarks?.have}/${course?.internalMarks?.max}`;
     text += `
 *Course*: ${name} *| Code*: ${code}
 *Type*: ${type}
@@ -50,40 +95,45 @@ const ATTENDANCE_STATE_MAP = new Map([
   [`${V1AttendanceState.Pending}`, "🟠"],
 ]);
 
-/**
- * @param {import("amizone_api").V1ScheduledClasses} schedule
- */
-export const renderSchedule = (schedule) => {
+export const renderSchedule = (schedule: V1ScheduledClasses) => {
   let text = "";
-  text = `*------ Date: ${schedule.classes[0].startTime.substring(
+  text = `*------ Date: ${schedule?.classes?.[0]?.startTime?.substring(
     0,
     10
   )} ------*
 
 `;
+  if (schedule.classes === undefined) {
+    return text;
+  }
+
   for (let i = 0; i < schedule.classes.length; i += 1) {
     const record = schedule.classes[i];
-    text += `*Course*: ${record.course.name}
+    text += `*Course*: ${record?.course?.name}
 *Faculty Name*: ${record.faculty}
 *Room*: ${record.room}
-*Time*: ${record.startTime.substring(11, 16)} - ${record.endTime.substring(
+*Time*: ${record?.startTime?.substring(11, 16)} - ${record?.endTime?.substring(
       11,
       16
-    )} | *Status*: ${ATTENDANCE_STATE_MAP.get(record.attendance) ?? "⚪"}
+    )} | *Status*: ${ATTENDANCE_STATE_MAP.get(record?.attendance ?? "") ?? "⚪"}
 
 `;
   }
   return text;
 };
 
-export const renderSemester = (semesters) => {
+export const renderSemester = (semesters: V1SemesterList) => {
   let text = "";
-  text = `*Current Semester*:${semesters.semesters[0].name}
+  text = `*Current Semester*: ${semesters?.semesters?.[0]?.name}
 
 `;
+  if (semesters.semesters === undefined) {
+    return text;
+  }
+
   for (let i = 1; i < semesters.semesters.length; i += 1) {
     const record = semesters.semesters[i];
-    text += `*Semester* :${record.name}
+    text += `*Semester*: ${record.name}
 
 `;
   }
@@ -196,5 +246,5 @@ _*5 3 Taught us well*_
 
 Please note that the same scores and comments will be used for all faculties with pending feedbacks.`;
 
-export const renderFacultyFeedbackConfirmaion = (filledFor) =>
+export const renderFacultyFeedbackConfirmation = (filledFor: number) =>
   `Faculty feedback has been filled for ${filledFor} faculties.`;

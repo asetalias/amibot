@@ -1,11 +1,10 @@
-import { DEFAULT_STATE } from "./states/states.js";
+import { Collection } from "mongodb";
+import { DEFAULT_STATE, User } from "./states/states.js";
 
-/**
- * @param {string} phoneNumber
- * @param {App.Collection} db
- * @returns Promise<[boolean, User]>
- */
-export const getUser = async (phoneNumber, db) => {
+export const getBotUser = async (
+  phoneNumber: string,
+  db: Collection
+): Promise<[boolean, User]> => {
   const userEntry = await db.findOne({ phone: phoneNumber });
   if (userEntry === null) {
     return [
@@ -34,11 +33,7 @@ export const getUser = async (phoneNumber, db) => {
   ];
 };
 
-/**
- * @param {User} newState
- * @param {App.Collection} db
- */
-export const updateUser = async (newState, db) => {
+export const updateBotUser = async (newState: User, db: Collection) => {
   await db.updateOne(
     { phone: newState.phone },
     {
