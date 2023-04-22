@@ -1,17 +1,15 @@
 import * as handlers from "./state-handlers.js";
 import { BotHandlerContext, User, states } from "./states.js";
 
-const handlerMap: Map<String, ((ctx: BotHandlerContext) => Promise<User>)> = new Map([
-  [states.NEW_USER, handlers.handleNewUser],
-  [states.EXPECT_USERNAME, handlers.handleExpectUsername],
-  [states.EXPECT_PASSWORD, handlers.handleExpectPassword],
-  [states.LOGGED_IN, handlers.handleLoggedIn],
-  [states.EXPECT_SCHEDULE_DATE, handlers.handleScheduleDateInput],
-  [
-    states.EXPECT_FACULTY_FEEDBACK_SPEC,
-    handlers.handleFacultyFeedbackRating,
-  ],
-]);
+const handlerMap: Map<string, (ctx: BotHandlerContext) => Promise<User>> =
+  new Map([
+    [states.NEW_USER, handlers.handleNewUser],
+    [states.EXPECT_USERNAME, handlers.handleExpectUsername],
+    [states.EXPECT_PASSWORD, handlers.handleExpectPassword],
+    [states.LOGGED_IN, handlers.handleLoggedIn],
+    [states.EXPECT_SCHEDULE_DATE, handlers.handleScheduleDateInput],
+    [states.EXPECT_FACULTY_FEEDBACK_SPEC, handlers.handleFacultyFeedbackRating],
+  ]);
 
 const handle = async (ctx: BotHandlerContext): Promise<User> => {
   const handler = handlerMap.get(ctx.user.state);

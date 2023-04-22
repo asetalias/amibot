@@ -14,7 +14,10 @@ import {
 } from "./render-messages.js";
 import { firstNonEmpty, newAmizoneClient } from "../utils.js";
 
-const validateAmizoneCredentials = async (username: string, password: string): Promise<boolean> => {
+const validateAmizoneCredentials = async (
+  username: string,
+  password: string
+): Promise<boolean> => {
   const amizoneClient = newAmizoneClient({ username, password });
   try {
     await amizoneClient.amizoneServiceGetSemesters();
@@ -42,7 +45,9 @@ export const handleNewUser = async (ctx: BotHandlerContext): Promise<User> => {
   return updatedUser;
 };
 
-export const handleExpectUsername = async (ctx: BotHandlerContext): Promise<User> => {
+export const handleExpectUsername = async (
+  ctx: BotHandlerContext
+): Promise<User> => {
   const { payload } = ctx;
   const updatedUser = structuredClone(ctx.user);
   updatedUser.state = states.EXPECT_PASSWORD;
@@ -51,13 +56,18 @@ export const handleExpectUsername = async (ctx: BotHandlerContext): Promise<User
   return updatedUser;
 };
 
-export const handleExpectPassword = async (ctx: BotHandlerContext): Promise<User> => {
+export const handleExpectPassword = async (
+  ctx: BotHandlerContext
+): Promise<User> => {
   const { payload } = ctx;
   const updatedUser = structuredClone(ctx.user);
   const password = payload.textBody;
   const username = updatedUser.amizoneCredentials.username;
   if (!username) {
-    await ctx.bot.sendMessage(ctx.payload.sender, "unexpectedly, the username is unset. this is a bug in the bot that should be reported.\nEnter username again:")
+    await ctx.bot.sendMessage(
+      ctx.payload.sender,
+      "unexpectedly, the username is unset. this is a bug in the bot that should be reported.\nEnter username again:"
+    );
     updatedUser.state = states.EXPECT_USERNAME;
     return updatedUser;
   }
@@ -90,7 +100,11 @@ const AmizoneMenuOptions = {
   FILL_FACULTY_FEEDBACK: "fill faculty feedback",
 };
 
-type StateHandlerFunctionOut = Promise<{ success: boolean, message: String | object | null, newState?: String }>
+type StateHandlerFunctionOut = Promise<{
+  success: boolean;
+  message: string | object | null;
+  newState?: string;
+}>;
 type StateHandlerFunction = (ctx: BotHandlerContext) => StateHandlerFunctionOut;
 
 /**
@@ -102,11 +116,13 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
     AmizoneMenuOptions.GET_ATTENDANCE,
     async (ctx: BotHandlerContext): StateHandlerFunctionOut => {
       try {
-        const attendance = await newAmizoneClient(ctx.user.amizoneCredentials).amizoneServiceGetAttendance();
-        return { success: true, message: renderAttendance(attendance.data) }
+        const attendance = await newAmizoneClient(
+          ctx.user.amizoneCredentials
+        ).amizoneServiceGetAttendance();
+        return { success: true, message: renderAttendance(attendance.data) };
       } catch (err) {
         // catch invalid credential?
-        return { success: false, message: "" }
+        return { success: false, message: "" };
       }
     },
   ],
@@ -139,7 +155,9 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
     AmizoneMenuOptions.GET_SEMESTERS,
     async (ctx): StateHandlerFunctionOut => {
       try {
-        const semesters = await newAmizoneClient(ctx.user.amizoneCredentials).amizoneServiceGetSemesters();
+        const semesters = await newAmizoneClient(
+          ctx.user.amizoneCredentials
+        ).amizoneServiceGetSemesters();
         return { success: true, message: renderSemester(semesters.data) };
       } catch (err) {
         // catch invalid credential?
@@ -150,7 +168,9 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
   [
     AmizoneMenuOptions.FILL_FACULTY_FEEDBACK,
     async (_ctx): StateHandlerFunctionOut => ({
-      success: true, message: renderFacultyFeedbackInstructions(), newState: states.EXPECT_FACULTY_FEEDBACK_SPEC,
+      success: true,
+      message: renderFacultyFeedbackInstructions(),
+      newState: states.EXPECT_FACULTY_FEEDBACK_SPEC,
     }),
   ],
 ]);
@@ -211,47 +231,75 @@ export const handleLoggedIn = async (ctx: BotHandlerContext): Promise<User> => {
 
 export const handleScheduleDateInput = async (ctx: BotHandlerContext) => {
   const { payload: whatsappPayload } = ctx;
-  const dateInput = firstNonEmpty(whatsappPayload.interactive.title, whatsappPayload.textBody);
+  const dateInput = firstNonEmpty(
+    whatsappPayload.interactive.title,
+    whatsappPayload.textBody
+  );
   const updatedUser = structuredClone(ctx.user);
   if (!Date.parse(dateInput)) {
     await ctx.bot
       .sendMessage(ctx.payload.sender, "invalid date!")
-      .catch((err) => console.error("failed to send message to WA: ", err));
-    await ctx.bot.sendInteractiveMessage(whatsappPayload.sender, renderClassScheduleDateList());
+      .catch((err: any) =>
+        console.error("failed to send message to WA: ", err)
+      );
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
+      renderClassScheduleDateList()
+    );
     return updatedUser;
   }
 
   try {
     const date = dateInput.split("-");
-    const [year, month, day] = [parseInt(date[0], 10), parseInt(date[1], 10), parseInt(date[2], 10)]
-    const schedule = await newAmizoneClient(ctx.user.amizoneCredentials).amizoneServiceGetClassSchedule(year, month, day);
-    if (schedule.data.classes !== undefined && schedule.data.classes.length > 0) {
+    const [year, month, day] = [
+      parseInt(date[0], 10),
+      parseInt(date[1], 10),
+      parseInt(date[2], 10),
+    ];
+    const schedule = await newAmizoneClient(
+      ctx.user.amizoneCredentials
+    ).amizoneServiceGetClassSchedule(year, month, day);
+    if (
+      schedule.data.classes !== undefined &&
+      schedule.data.classes.length > 0
+    ) {
       await ctx.bot.sendMessage(
         whatsappPayload.sender,
         renderSchedule(schedule.data)
       );
     } else {
       // ?: Could we make the message more informative, like indicating a holiday if its one?
-      await ctx.bot.sendMessage(whatsappPayload.sender, "no schedule available.");
+      await ctx.bot.sendMessage(
+        whatsappPayload.sender,
+        "no schedule available."
+      );
     }
-    await ctx.bot.sendInteractiveMessage(whatsappPayload.sender, renderAmizoneMenu());
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
+      renderAmizoneMenu()
+    );
     updatedUser.state = states.LOGGED_IN;
   } catch (err) {
     // ? catch invalid credential
     console.error(`error while processing req: ${err}`);
   }
   return updatedUser;
-
 };
 
 export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
   const { payload: whatsappPayload } = ctx;
-  const message = firstNonEmpty(whatsappPayload.interactive.title, whatsappPayload.textBody);
+  const message = firstNonEmpty(
+    whatsappPayload.interactive.title,
+    whatsappPayload.textBody
+  );
   const updatedUser = structuredClone(ctx.user);
 
   if (message.toLowerCase().trim() === "cancel") {
     await ctx.bot.sendMessage(whatsappPayload.sender, "Cancelled.");
-    await ctx.bot.sendInteractiveMessage(whatsappPayload.sender, renderAmizoneMenu());
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
+      renderAmizoneMenu()
+    );
     updatedUser.state = states.LOGGED_IN;
     return updatedUser;
   }
@@ -290,14 +338,19 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
   }
 
   try {
-    const feedback = await newAmizoneClient(ctx.user.amizoneCredentials).amizoneServiceFillFacultyFeedback(rating, queryRating, comment);
+    const feedback = await newAmizoneClient(
+      ctx.user.amizoneCredentials
+    ).amizoneServiceFillFacultyFeedback(rating, queryRating, comment);
     // @ts-ignore
     if (feedback.data.filledFor === 0) {
       await ctx.bot.sendMessage(
         whatsappPayload.sender,
         "No feedback to fill at the moment"
       );
-      await ctx.bot.sendInteractiveMessage(whatsappPayload.sender, renderAmizoneMenu());
+      await ctx.bot.sendInteractiveMessage(
+        whatsappPayload.sender,
+        renderAmizoneMenu()
+      );
       updatedUser.state = states.LOGGED_IN;
       return updatedUser;
     }
@@ -306,7 +359,10 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
       // @ts-ignore
       renderFacultyFeedbackConfirmation(feedback.data.filledFor)
     );
-    await ctx.bot.sendInteractiveMessage(whatsappPayload.sender, renderAmizoneMenu());
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
+      renderAmizoneMenu()
+    );
     updatedUser.state = states.LOGGED_IN;
   } catch (err) {
     // ? catch invalid credential
@@ -314,5 +370,3 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
   }
   return updatedUser;
 };
-
-

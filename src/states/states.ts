@@ -1,4 +1,4 @@
-import { WhatsappApiClient, WhatsappPayload } from "../whatsapp";
+import { WhatsappApiClient, WhatsappPayload } from "../whatsapp.js";
 
 import { Collection } from "mongodb";
 
@@ -14,13 +14,13 @@ export const states = {
 export type AmizoneCredentials = {
   username: string | null | undefined;
   password: string | null | undefined;
-}
+};
 
 export interface User {
-  readonly phone: String,
-  state: String,
+  readonly phone: string;
+  state: string;
   amizoneCredentials: AmizoneCredentials;
-};
+}
 
 export interface BotHandlerContext {
   db: Collection;

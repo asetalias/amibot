@@ -1,4 +1,10 @@
-import { V1AttendanceRecords, V1AttendanceState, V1Courses, V1ScheduledClasses, V1SemesterList } from "amizone_api";
+import {
+  V1AttendanceRecords,
+  V1AttendanceState,
+  V1Courses,
+  V1ScheduledClasses,
+  V1SemesterList,
+} from "amizone_api";
 
 // === Utilities ===
 
@@ -19,11 +25,13 @@ const renderRelativeDate = (d: number): string => {
   const relativeDate = new Date(
     dateToIST(new Date()).getTime() + d * DAY_TO_MINUTE * MINUTE_TO_MS
   );
-  return `${relativeDate.getFullYear()}-${relativeDate.getMonth() + 1
-    }-${relativeDate.getDate()}`;
+  return `${relativeDate.getFullYear()}-${
+    relativeDate.getMonth() + 1
+  }-${relativeDate.getDate()}`;
 };
 
-const toFormattedPercent = (total: number, went: number) => ((went * 100) / total).toFixed(2);
+const toFormattedPercent = (total: number, went: number) =>
+  ((went * 100) / total).toFixed(2);
 
 // === End of utilities ===
 
@@ -32,14 +40,18 @@ const toFormattedPercent = (total: number, went: number) => ((went * 100) / tota
  */
 export const renderAttendance = (attendance: V1AttendanceRecords) => {
   if (attendance.records === undefined) {
-    return ""
+    return "";
   }
 
   let text = "";
   for (let i = 0; i < attendance.records.length; i += 1) {
     const record = attendance.records[i];
-    text += `*Course*: ${record.course?.name ?? "<Unknown>"} *| Code*: ${record?.course?.code || "<Unknown>"}
-  => ${record?.attendance?.attended}/${record?.attendance?.held} (${toFormattedPercent(
+    text += `*Course*: ${record.course?.name ?? "<Unknown>"} *| Code*: ${
+      record?.course?.code || "<Unknown>"
+    }
+  => ${record?.attendance?.attended}/${
+      record?.attendance?.held
+    } (${toFormattedPercent(
       record?.attendance?.held ?? 0,
       record?.attendance?.attended ?? 1
     )}%)
@@ -60,8 +72,12 @@ export const renderCourses = (courses: V1Courses) => {
     const { type } = course;
     const code = course.ref?.code;
     const name = course.ref?.name;
-    const attendance = `${course?.attendance?.attended}/${course?.attendance?.held
-      } (${toFormattedPercent(course?.attendance?.held ?? 0, course?.attendance?.attended ?? 1)}%)`;
+    const attendance = `${course?.attendance?.attended}/${
+      course?.attendance?.held
+    } (${toFormattedPercent(
+      course?.attendance?.held ?? 0,
+      course?.attendance?.attended ?? 1
+    )}%)`;
     const internalMarks = `${course?.internalMarks?.have}/${course?.internalMarks?.max}`;
     text += `
 *Course*: ${name} *| Code*: ${code}
@@ -108,7 +124,7 @@ export const renderSchedule = (schedule: V1ScheduledClasses) => {
 
 export const renderSemester = (semesters: V1SemesterList) => {
   let text = "";
-  text = `*Current Semester*: ${semesters?.semesters?.[0].name}
+  text = `*Current Semester*: ${semesters?.semesters?.[0]?.name}
 
 `;
   if (semesters.semesters === undefined) {
@@ -117,7 +133,7 @@ export const renderSemester = (semesters: V1SemesterList) => {
 
   for (let i = 1; i < semesters.semesters.length; i += 1) {
     const record = semesters.semesters[i];
-    text += `*Semester* :${record.name}
+    text += `*Semester*: ${record.name}
 
 `;
   }
@@ -230,5 +246,5 @@ _*5 3 Taught us well*_
 
 Please note that the same scores and comments will be used for all faculties with pending feedbacks.`;
 
-export const renderFacultyFeedbackConfirmation = (filledFor: Number) =>
+export const renderFacultyFeedbackConfirmation = (filledFor: number) =>
   `Faculty feedback has been filled for ${filledFor} faculties.`;

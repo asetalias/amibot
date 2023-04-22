@@ -7,7 +7,10 @@ import { Collection } from "mongodb";
 
 const { metaApiToken, webhookVerificationToken } = getConfig();
 
-export default async function (fastify: FastifyInstance, opts: { db?: Collection }) {
+export default async function (
+  fastify: FastifyInstance,
+  opts: { db?: Collection }
+) {
   fastify.post("/webhook", async (req, res) => {
     const db = opts.db;
     if (db === undefined) {

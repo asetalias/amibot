@@ -1,7 +1,10 @@
 import { Collection } from "mongodb";
 import { DEFAULT_STATE, User } from "./states/states.js";
 
-export const getBotUser = async (phoneNumber: String, db: Collection): Promise<[boolean, User]> => {
+export const getBotUser = async (
+  phoneNumber: string,
+  db: Collection
+): Promise<[boolean, User]> => {
   const userEntry = await db.findOne({ phone: phoneNumber });
   if (userEntry === null) {
     return [

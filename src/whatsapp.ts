@@ -15,29 +15,37 @@ export interface WhatsappPayload {
     payload: string;
   };
   interactive: {
-    type: string,
-    title: string,
-    interactiveId: string,
-  },
+    type: string;
+    title: string;
+    interactiveId: string;
+  };
 }
 
 export class WhatsappApiClient {
-  _apiKey: String;
-  _from: String;
+  _apiKey: string;
+  _from: string;
   _axios: AxiosInstance;
 
-  constructor(apiKey: string, from: string, config: { axios: AxiosInstance } | null = null) {
+  constructor(
+    apiKey: string,
+    from: string,
+    config: { axios: AxiosInstance } | null = null
+  ) {
     this._apiKey = apiKey;
     this._from = from;
     this._axios = (() => {
       if (config == null || !(config.axios instanceof axios.Axios)) {
-        return axios.create({});
+        return axios.default.create({});
       }
       return config.axios;
     })();
   }
 
-  async sendTemplate(to: string, template: string, language: string = "en"): Promise<void> {
+  async sendTemplate(
+    to: string,
+    template: string,
+    language = "en"
+  ): Promise<void> {
     // Changed from en_us to en
     await this._send(to, "template", {
       name: template,
@@ -61,7 +69,11 @@ export class WhatsappApiClient {
    * TODO: improve error handling flow
    * @private
    */
-  async _send(to: string, type: "text" | "template" | "interactive", value: object): Promise<void> {
+  async _send(
+    to: string,
+    type: "text" | "template" | "interactive",
+    value: object
+  ): Promise<void> {
     await this._axios
       .post(
         `${API_BASE_URL}/${API_VERSION}/${this._from}/messages`,

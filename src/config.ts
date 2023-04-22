@@ -6,14 +6,14 @@ const getConfig = () => {
     userCollectionName: process.env.USER_COLLECTION_NAME || "",
     metaApiToken: process.env.META_API_TOKEN || "",
     webhookVerificationToken: process.env.WEBHOOK_VERIFICATION_TOKEN || "",
-  }
+  };
   for (const [k, v] of Object.entries(config)) {
     if (v === undefined || v === "") {
-      throw new Error(`no ${k}!`)
+      throw new Error(`no ${k}!`);
     }
   }
 
-  return config
-}
+  return config;
+};
 
 export default getConfig;
