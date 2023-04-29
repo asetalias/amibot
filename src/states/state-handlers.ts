@@ -3,7 +3,6 @@ import {
   renderAmizoneMenu,
   renderAttendance,
   renderCourses,
-  renderSemester,
   renderSchedule,
   renderWelcomeMessage,
   renderUsernamePrompt,
@@ -96,7 +95,6 @@ const AmizoneMenuOptions = {
   GET_ATTENDANCE: "attendance",
   GET_SCHEDULE: "class schedule",
   GET_COURSES: "courses",
-  GET_SEMESTERS: "semesters",
   FILL_FACULTY_FEEDBACK: "fill faculty feedback",
 };
 
@@ -147,20 +145,6 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
         );
         return { success: true, message: renderCourses(courses.data) };
       } catch (err) {
-        return { success: false, message: "" };
-      }
-    },
-  ],
-  [
-    AmizoneMenuOptions.GET_SEMESTERS,
-    async (ctx): StateHandlerFunctionOut => {
-      try {
-        const semesters = await newAmizoneClient(
-          ctx.user.amizoneCredentials
-        ).amizoneServiceGetSemesters();
-        return { success: true, message: renderSemester(semesters.data) };
-      } catch (err) {
-        // catch invalid credential?
         return { success: false, message: "" };
       }
     },
