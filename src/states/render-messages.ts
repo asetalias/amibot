@@ -2,6 +2,7 @@ import {
   V1AttendanceRecords,
   V1AttendanceState,
   V1Courses,
+  V1ExaminationSchedule,
   V1ScheduledClasses,
   V1SemesterList,
 } from "amizone_api";
@@ -175,6 +176,7 @@ export const renderAmizoneMenu = () => ({
           {
             id: "3",
             title: "Courses",
+            description: "_And internals_"
           },
           {
             id: "4",
@@ -183,6 +185,11 @@ export const renderAmizoneMenu = () => ({
           },
           {
             id: "5",
+            title: "Exam Schedule",
+            description: "_Includes location/room no._",
+          },
+          {
+            id: "6",
             title: "Logout",
           },
         ],
@@ -221,6 +228,21 @@ export const renderClassScheduleDateList = () => {
     },
   };
 };
+
+export const renderExamSchedule = (schedule: V1ExaminationSchedule) => {
+  const exams = schedule?.exams?.map((exam) => {
+    const { mode, time: serialTime, course, location } = exam;
+    // HACK: In general, we should treat the incoming times as UTC and interpret them timezone-agnostically.
+    // However at the moment I don't feel like dealing with timezones, so I'm just going to subtract 5:30 hours from the time.
+    const time = serialTime ? new Date(Date.parse(serialTime) - OFFSET_IST * MINUTE_TO_MS) : undefined;
+    return `*👉* ${course?.code} ${course?.name}
+*⏲️:* ${time ? time.toLocaleString() : "N/A"} (Mode: ${mode})` + (location ? `\n*📍* ${location}` : "");
+  }).join("\n\n");
+
+  return `*${schedule.title}*
+
+${exams}`;
+}
 
 export const renderFacultyFeedbackInstructions =
   () => `This method will submit feedback for *all* your faculty in a single step.
