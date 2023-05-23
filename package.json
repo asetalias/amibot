@@ -27,7 +27,7 @@
   "dependencies": {
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^4.1.0",
-    "amizone_api": "^0.5.1",
+    "amizone_api": "^0.7.0",
     "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "eslint-plugin-import": "^2.25.3",

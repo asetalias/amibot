@@ -632,10 +632,10 @@ ajv@^8.0.0, ajv@^8.1.0, ajv@^8.10.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-amizone_api@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/amizone_api/-/amizone_api-0.5.1.tgz#c7b64b74f5e3b46007141b186735965fa5fe711b"
-  integrity sha512-0tmZTLR+klStgb/CAllQDTjZMrgnGOs6QbGQ+oU46II4kwUbzGN/5w95LQlhI0rU+4gZ2GmpKuZeh4I/+d+fuQ==
+amizone_api@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/amizone_api/-/amizone_api-0.7.0.tgz#a1b26b7af1b783acb1d76e48ac9b010957783b72"
+  integrity sha512-F6APTNrQtypXJLPhccgT8W596IcdGxVYxnlyfEwrCDQb5bsyNTe2kAhWOXKOYnTdN+bVBvm14Un8LOmXVs3gmA==
   dependencies:
     axios "^0.27.2"
 

@@ -8,6 +8,7 @@ export async function connect(): Promise<
   const client = new mongo.MongoClient(config.mongoUrl, {
     serverApi: "1",
     keepAlive: true,
+    retryWrites: true,
   });
   console.log("connecting to database...");
   await client.connect();

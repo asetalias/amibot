@@ -10,6 +10,7 @@ import {
   renderClassScheduleDateList,
   renderFacultyFeedbackInstructions,
   renderFacultyFeedbackConfirmation,
+  renderExamSchedule,
 } from "./render-messages.js";
 import { firstNonEmpty, newAmizoneClient } from "../utils.js";
 
@@ -96,6 +97,7 @@ const AmizoneMenuOptions = {
   GET_SCHEDULE: "class schedule",
   GET_COURSES: "courses",
   FILL_FACULTY_FEEDBACK: "fill faculty feedback",
+  GET_EXAM_SCHEDULE: "exam schedule",
 };
 
 type StateHandlerFunctionOut = Promise<{
@@ -157,6 +159,19 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
       newState: states.EXPECT_FACULTY_FEEDBACK_SPEC,
     }),
   ],
+  [
+    AmizoneMenuOptions.GET_EXAM_SCHEDULE,
+    async (ctx): StateHandlerFunctionOut => {
+      try {
+        const amizoneClient = newAmizoneClient(ctx.user.amizoneCredentials);
+        const examSchedule = await amizoneClient.amizoneServiceGetExamSchedule();
+        return { success: true, message: renderExamSchedule(examSchedule.data) };
+      }
+      catch (err) {
+        return { success: false, message: "" };
+      }
+    }
+  ]
 ]);
 
 /**
@@ -324,8 +339,7 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
   try {
     const feedback = await newAmizoneClient(
       ctx.user.amizoneCredentials
-    ).amizoneServiceFillFacultyFeedback(rating, queryRating, comment);
-    // @ts-ignore
+    ).amizoneServiceFillFacultyFeedback({ queryRating, rating, comment });
     if (feedback.data.filledFor === 0) {
       await ctx.bot.sendMessage(
         whatsappPayload.sender,
