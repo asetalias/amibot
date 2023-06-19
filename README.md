@@ -38,7 +38,7 @@ Either deploy your own instance, or use the official Amibot instance by clicking
 
 ## Contributions
 
-Contributions to the project are welcome! If you have a bug or feature request, please open an issue on [GitHub][github]. Read the [Contribution Guide](./CONTRIBUTING.md) for more information, including how to run the project locally.
+Contributions to the project are welcome! If you have a bug or feature request, please open an issue on [GitHub][github]. Read the [Contribution Guide](./CONTRIBUTING/CONTRIBUTING.md) for more information, including how to run the project locally.
 
 [github]: https://github.com/asetalias/amibot
 [issues]: https://github.com/asetalias/amibot/issues
