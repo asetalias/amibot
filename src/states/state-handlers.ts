@@ -316,7 +316,7 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
   ) {
     await ctx.bot.sendMessage(
       whatsappPayload.sender,
-      "Invalid input. Please try again."
+      "Invalid input. Please try again, or type *cancel* to cancel."
     );
     return updatedUser;
   }
