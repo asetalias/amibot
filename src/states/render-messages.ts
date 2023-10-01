@@ -145,9 +145,9 @@ Amibot is an open-source project hosted on fly.io. Source code is available at g
 Join ALiAS, Amity's largest open source community, at asetalias.in ;)
 `;
 
-export const renderUsernamePrompt = () => "*Enter Username:*";
+export const renderUsernamePrompt = () => "Amibot uses your Amizone credentials to access the portal. *Enter your Amizone username:*";
 
-export const renderPasswordPrompt = () => "*Enter Password:*";
+export const renderPasswordPrompt = () => "*Enter your Amizone password:*";
 
 // Menu. Type: Interactive.
 export const renderAmizoneMenu = () => ({
