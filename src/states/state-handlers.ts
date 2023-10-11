@@ -1,6 +1,7 @@
-import { BotHandlerContext, User, states } from "./states.js";
+import { BotHandlerContext, states, User } from "./states.js";
 import {
   renderAmizoneMenu,
+  renderQuickAttendanceButtons,
   renderAttendance,
   renderCourses,
   renderSchedule,
@@ -13,6 +14,15 @@ import {
   renderExamSchedule,
 } from "./render-messages.js";
 import { firstNonEmpty, newAmizoneClient } from "../utils.js";
+
+// === Utilities ===
+const OFFSET_IST = 330;
+const MINUTE_TO_MS = 60_000;
+const DAY_TO_MINUTE = 24 * 60;
+const currentTzOffset = new Date().getTimezoneOffset();
+
+const dateToIST = (date: Date): Date =>
+  new Date(date.getTime() + (OFFSET_IST - currentTzOffset) * MINUTE_TO_MS);
 
 const validateAmizoneCredentials = async (
   username: string,
@@ -79,6 +89,10 @@ export const handleExpectPassword = async (
   if (credentialsAreValid) {
     updatedUser.amizoneCredentials.password = password;
     updatedUser.state = states.LOGGED_IN;
+    await ctx.bot.sendInteractiveMessage(
+      payload.sender,
+      renderQuickAttendanceButtons()
+    );
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
     return updatedUser;
   }
@@ -164,14 +178,17 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
     async (ctx): StateHandlerFunctionOut => {
       try {
         const amizoneClient = newAmizoneClient(ctx.user.amizoneCredentials);
-        const examSchedule = await amizoneClient.amizoneServiceGetExamSchedule();
-        return { success: true, message: renderExamSchedule(examSchedule.data) };
-      }
-      catch (err) {
+        const examSchedule =
+          await amizoneClient.amizoneServiceGetExamSchedule();
+        return {
+          success: true,
+          message: renderExamSchedule(examSchedule.data),
+        };
+      } catch (err) {
         return { success: false, message: "" };
       }
-    }
-  ]
+    },
+  ],
 ]);
 
 /**
@@ -191,6 +208,13 @@ export const handleLoggedIn = async (ctx: BotHandlerContext): Promise<User> => {
     updatedUser.state = states.NEW_USER;
     await ctx.bot.sendMessage(payload.sender, "Logged Out!");
     return updatedUser;
+  } else if (
+    payload.interactive.title === "Yesterday's" ||
+    payload.interactive.title === "Today's"
+  ) {
+    // Handle attendance button click
+    await handleReplyAttendanceButton(ctx);
+    return updatedUser;
   }
 
   const messageHandler = amizoneMenuHandlersMap.get(inputMessage);
@@ -200,6 +224,10 @@ export const handleLoggedIn = async (ctx: BotHandlerContext): Promise<User> => {
     await ctx.bot.sendMessage(
       payload.sender,
       "Invalid option selected. Try again?"
+    );
+    await ctx.bot.sendInteractiveMessage(
+      payload.sender,
+      renderQuickAttendanceButtons()
     );
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
     return updatedUser;
@@ -211,12 +239,20 @@ export const handleLoggedIn = async (ctx: BotHandlerContext): Promise<User> => {
       payload.sender,
       "Unsuccessful. Either Amizone is down or you need to login again (hint: menu has a _logout_ option)"
     );
+    await ctx.bot.sendInteractiveMessage(
+      payload.sender,
+      renderQuickAttendanceButtons()
+    );
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
     return updatedUser;
   }
 
   if (typeof message === "string") {
     await ctx.bot.sendMessage(payload.sender, message);
+    await ctx.bot.sendInteractiveMessage(
+      payload.sender,
+      renderQuickAttendanceButtons()
+    );
     await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
   }
 
@@ -225,6 +261,63 @@ export const handleLoggedIn = async (ctx: BotHandlerContext): Promise<User> => {
   }
 
   updatedUser.state = newState ?? states.LOGGED_IN;
+  return updatedUser;
+};
+
+export const handleReplyAttendanceButton = async (
+  ctx: BotHandlerContext
+): Promise<User> => {
+  const { payload } = ctx;
+  const updatedUser = structuredClone(ctx.user);
+
+  // Check if the user clicked either "Today's Attendance" or "Yesterday's Attendance"
+  if (
+    payload.interactive.title === "Today's" ||
+    payload.interactive.title === "Yesterday's"
+  ) {
+    let selectedDate;
+
+    if (payload.interactive.title === "Today's") {
+      selectedDate = new Date(dateToIST(new Date()).getTime());
+    } else {
+      selectedDate = new Date(
+        dateToIST(new Date()).getTime() - 1 * DAY_TO_MINUTE * MINUTE_TO_MS
+      );
+    }
+
+    try {
+      // Fetch attendance data for the selected date using your Amizone API client
+      const [year, month, day] = [
+        selectedDate.getFullYear(),
+        selectedDate.getMonth() + 1,
+        selectedDate.getDate(),
+      ];
+      const attendance = await newAmizoneClient(
+        ctx.user.amizoneCredentials
+      ).amizoneServiceGetClassSchedule(year, month, day);
+
+      // Send the attendance data as a message to the user
+      if (
+        attendance.data.classes !== undefined &&
+        attendance.data.classes.length > 0
+      ) {
+        await ctx.bot.sendMessage(
+          payload.sender,
+          renderSchedule(attendance.data)
+        );
+      } else {
+        await ctx.bot.sendMessage(payload.sender, "no schedule available.");
+      }
+      await ctx.bot.sendInteractiveMessage(
+        payload.sender,
+        renderQuickAttendanceButtons()
+      );
+      await ctx.bot.sendInteractiveMessage(payload.sender, renderAmizoneMenu());
+    } catch (error) {
+      // Handle errors (e.g., API request error)
+      console.error("Error fetching attendance for the selected date:", error);
+    }
+  }
   return updatedUser;
 };
 
@@ -275,6 +368,10 @@ export const handleScheduleDateInput = async (ctx: BotHandlerContext) => {
     }
     await ctx.bot.sendInteractiveMessage(
       whatsappPayload.sender,
+      renderQuickAttendanceButtons()
+    );
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
       renderAmizoneMenu()
     );
     updatedUser.state = states.LOGGED_IN;
@@ -295,6 +392,10 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
 
   if (message.toLowerCase().trim() === "cancel") {
     await ctx.bot.sendMessage(whatsappPayload.sender, "Cancelled.");
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
+      renderQuickAttendanceButtons()
+    );
     await ctx.bot.sendInteractiveMessage(
       whatsappPayload.sender,
       renderAmizoneMenu()
@@ -347,6 +448,10 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
       );
       await ctx.bot.sendInteractiveMessage(
         whatsappPayload.sender,
+        renderQuickAttendanceButtons()
+      );
+      await ctx.bot.sendInteractiveMessage(
+        whatsappPayload.sender,
         renderAmizoneMenu()
       );
       updatedUser.state = states.LOGGED_IN;
@@ -356,6 +461,10 @@ export const handleFacultyFeedbackRating = async (ctx: BotHandlerContext) => {
       whatsappPayload.sender,
       // @ts-ignore
       renderFacultyFeedbackConfirmation(feedback.data.filledFor)
+    );
+    await ctx.bot.sendInteractiveMessage(
+      whatsappPayload.sender,
+      renderQuickAttendanceButtons()
     );
     await ctx.bot.sendInteractiveMessage(
       whatsappPayload.sender,
