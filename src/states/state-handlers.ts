@@ -11,6 +11,7 @@ import {
   renderFacultyFeedbackInstructions,
   renderFacultyFeedbackConfirmation,
   renderExamSchedule,
+  renderHelpMessage,
 } from "./render-messages.js";
 import { firstNonEmpty, newAmizoneClient } from "../utils.js";
 
@@ -98,6 +99,7 @@ const AmizoneMenuOptions = {
   GET_COURSES: "courses",
   FILL_FACULTY_FEEDBACK: "fill faculty feedback",
   GET_EXAM_SCHEDULE: "exam schedule",
+  HELP: "help message", 
 };
 
 type StateHandlerFunctionOut = Promise<{
@@ -166,6 +168,18 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
         const amizoneClient = newAmizoneClient(ctx.user.amizoneCredentials);
         const examSchedule = await amizoneClient.amizoneServiceGetExamSchedule();
         return { success: true, message: renderExamSchedule(examSchedule.data) };
+      }
+      catch (err) {
+        return { success: false, message: "" };
+      }
+    }
+  ],
+  [
+    AmizoneMenuOptions.HELP,
+    async (): StateHandlerFunctionOut => {
+      try {
+        
+        return { success: true, message: renderHelpMessage() };
       }
       catch (err) {
         return { success: false, message: "" };

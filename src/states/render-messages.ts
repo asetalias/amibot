@@ -244,6 +244,32 @@ export const renderExamSchedule = (schedule: V1ExaminationSchedule) => {
 ${exams}`;
 }
 
+export const renderHelpMessage = ()  => {
+  const helpmessage = 
+  `Help Commands 
+
+  /a - To get attendance 
+  
+  /c - To know your courses
+  
+  /f -  To give feedback 
+  
+  /l -  To Logout
+  
+  /e - Exam Schedule 
+  
+  For class schedule 
+  
+  /cs (For Today)
+  
+  /cs +x (for x days into the future) 
+  
+  /cs -x (for z days in the past)
+  
+  For example:-  /cs+1 will render tomorrows Class Schedule)
+  `
+  return helpmessage 
+}
 export const renderFacultyFeedbackInstructions =
   () => `This method will submit feedback for *all* your faculty in a single step.
 
