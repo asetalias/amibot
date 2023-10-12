@@ -162,6 +162,18 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
     }),
   ],
   [
+    AmizoneMenuOptions.HELP,
+    async (): StateHandlerFunctionOut => {
+      try {
+        
+        return { success: true, message: renderHelpMessage() };
+      }
+      catch (err) {
+        return { success: false, message: "" };
+      }
+    }
+  ],
+  [
     AmizoneMenuOptions.GET_EXAM_SCHEDULE,
     async (ctx): StateHandlerFunctionOut => {
       try {
@@ -174,18 +186,7 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
       }
     }
   ],
-  [
-    AmizoneMenuOptions.HELP,
-    async (): StateHandlerFunctionOut => {
-      try {
-        
-        return { success: true, message: renderHelpMessage() };
-      }
-      catch (err) {
-        return { success: false, message: "" };
-      }
-    }
-  ]
+  
 ]);
 
 /**
