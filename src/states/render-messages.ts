@@ -26,8 +26,9 @@ const renderRelativeDate = (d: number): string => {
   const relativeDate = new Date(
     dateToIST(new Date()).getTime() + d * DAY_TO_MINUTE * MINUTE_TO_MS
   );
-  return `${relativeDate.getFullYear()}-${relativeDate.getMonth() + 1
-    }-${relativeDate.getDate()}`;
+  return `${relativeDate.getFullYear()}-${
+    relativeDate.getMonth() + 1
+  }-${relativeDate.getDate()}`;
 };
 
 const toFormattedPercent = (total: number, went: number) =>
@@ -46,13 +47,15 @@ export const renderAttendance = (attendance: V1AttendanceRecords) => {
   let text = "";
   for (let i = 0; i < attendance.records.length; i += 1) {
     const record = attendance.records[i];
-    text += `*Course*: ${record.course?.name ?? "<Unknown>"} *| Code*: ${record?.course?.code || "<Unknown>"
-      }
-  => ${record?.attendance?.attended}/${record?.attendance?.held
-      } (${toFormattedPercent(
-        record?.attendance?.held ?? 0,
-        record?.attendance?.attended ?? 1
-      )}%)
+    text += `*Course*: ${record.course?.name ?? "<Unknown>"} *| Code*: ${
+      record?.course?.code || "<Unknown>"
+    }
+  => ${record?.attendance?.attended}/${
+      record?.attendance?.held
+    } (${toFormattedPercent(
+      record?.attendance?.held ?? 0,
+      record?.attendance?.attended ?? 1
+    )}%)
 
 `;
   }
@@ -70,11 +73,12 @@ export const renderCourses = (courses: V1Courses) => {
     const { type } = course;
     const code = course.ref?.code;
     const name = course.ref?.name;
-    const attendance = `${course?.attendance?.attended}/${course?.attendance?.held
-      } (${toFormattedPercent(
-        course?.attendance?.held ?? 0,
-        course?.attendance?.attended ?? 1
-      )}%)`;
+    const attendance = `${course?.attendance?.attended}/${
+      course?.attendance?.held
+    } (${toFormattedPercent(
+      course?.attendance?.held ?? 0,
+      course?.attendance?.attended ?? 1
+    )}%)`;
     const internalMarks = `${course?.internalMarks?.have}/${course?.internalMarks?.max}`;
     text += `
 *Course*: ${name} *| Code*: ${code}
@@ -176,7 +180,7 @@ export const renderAmizoneMenu = () => ({
           {
             id: "3",
             title: "Courses",
-            description: "(and internals)"
+            description: "(and internals)",
           },
           {
             id: "4",
@@ -193,6 +197,35 @@ export const renderAmizoneMenu = () => ({
             title: "Logout",
           },
         ],
+      },
+    ],
+  },
+});
+
+export const renderQuickAttendanceButtons = () => ({
+  type: "button",
+  header: {
+    type: "text",
+    text: "Attendance",
+  },
+  body: {
+    text: "Quick Attendance Checkout",
+  },
+  action: {
+    buttons: [
+      {
+        type: "reply",
+        reply: {
+          id: "yesterday_attendance",
+          title: "Yesterday's", // Check schedule -> 28
+        },
+      },
+      {
+        type: "reply",
+        reply: {
+          id: "today_attendance",
+          title: "Today's",
+        },
       },
     ],
   },
@@ -230,19 +263,28 @@ export const renderClassScheduleDateList = () => {
 };
 
 export const renderExamSchedule = (schedule: V1ExaminationSchedule) => {
-  const exams = schedule?.exams?.map((exam) => {
-    const { mode, time: serialTime, course, location } = exam;
-    // HACK: In general, we should treat the incoming times as UTC and interpret them timezone-agnostically.
-    // However at the moment I don't feel like dealing with timezones, so I'm just going to subtract 5:30 hours from the time.
-    const time = serialTime ? dateToIST(new Date(Date.parse(serialTime) - OFFSET_IST * MINUTE_TO_MS)) : undefined;
-    return `*👉* ${course?.code} ${course?.name}
-*⏲️:* ${time ? time.toLocaleString() : "N/A"} (Mode: ${mode})` + (location ? `\n*📍* ${location}` : "");
-  }).join("\n\n");
+  const exams = schedule?.exams
+    ?.map((exam) => {
+      const { mode, time: serialTime, course, location } = exam;
+      // HACK: In general, we should treat the incoming times as UTC and interpret them timezone-agnostically.
+      // However at the moment I don't feel like dealing with timezones, so I'm just going to subtract 5:30 hours from the time.
+      const time = serialTime
+        ? dateToIST(
+            new Date(Date.parse(serialTime) - OFFSET_IST * MINUTE_TO_MS)
+          )
+        : undefined;
+      return (
+        `*👉* ${course?.code} ${course?.name}
+*⏲️:* ${time ? time.toLocaleString() : "N/A"} (Mode: ${mode})` +
+        (location ? `\n*📍* ${location}` : "")
+      );
+    })
+    .join("\n\n");
 
   return `*${schedule.title}*
 
 ${exams}`;
-}
+};
 
 export const renderHelpMessage = ()  => 
   `Help Commands 
