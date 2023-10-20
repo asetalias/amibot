@@ -50,7 +50,7 @@ Scan through our [existing issues](https://github.com/asetalias/amibot/issues) t
 
 This describes the setup you need to test and run this application on your local computer.
 
-#### [Bun.JS](https://nodejs.org/en/download/)
+#### [Bun.JS](https://bun.sh)
 
 Amibot needs Bun version 1.0.6+ -- use [`bun`](https://bun.sh) for easy setup.
 
