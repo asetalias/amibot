@@ -107,9 +107,9 @@ export const handleExpectPassword = async (
 };
 
 const AmizoneMenuOptions = {
-  GET_ATTENDANCE: "attendance",
+  GET_ATTENDANCE: "total attendance",
   GET_SCHEDULE: "class schedule",
-  GET_COURSES: "courses",
+  GET_COURSES: "course details",
   FILL_FACULTY_FEEDBACK: "fill faculty feedback",
   GET_EXAM_SCHEDULE: "exam schedule",
 };

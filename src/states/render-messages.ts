@@ -144,14 +144,18 @@ export const renderSemester = (semesters: V1SemesterList) => {
 export const renderWelcomeMessage = () => `\
 Welcome the the Amibot Beta, proudly brought to you by the ALiAS Community.
 
+Your *Amizone credentials* are safe with us, credentials are only used for accessing amizone data. Once you logout, your details are deleted from our end.
+
+You can logout with the menu, or by sending *logout* message to the bot.
+
 Amibot is an open-source project hosted on fly.io. Source code is available at github.com/asetalias/amibot and open to contributions, bug reports and feature requests!
 
 Join ALiAS, Amity's largest open source community, at asetalias.in ;)
 `;
 
-export const renderUsernamePrompt = () => "Amibot uses your Amizone credentials to access the portal. *Enter your Amizone username:*";
+export const renderUsernamePrompt = () => "*Please enter your Amizone username:*";
 
-export const renderPasswordPrompt = () => "*Enter your Amizone password:*";
+export const renderPasswordPrompt = () => "*Please enter your Amizone password:*";
 
 // Menu. Type: Interactive.
 export const renderAmizoneMenu = () => ({
@@ -171,7 +175,7 @@ export const renderAmizoneMenu = () => ({
         rows: [
           {
             id: "1",
-            title: "Attendance",
+            title: "Total Attendance",
           },
           {
             id: "2",
@@ -179,7 +183,7 @@ export const renderAmizoneMenu = () => ({
           },
           {
             id: "3",
-            title: "Courses",
+            title: "Course Details",
             description: "(and internals)",
           },
           {
