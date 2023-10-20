@@ -8,11 +8,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
-    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "test": "bun install && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "start": "bun install && fastify start -l info dist/app.js",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
-    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev": "bun install && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
     "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
     "lint": "eslint . --ext .js,.mjs,.ts --quiet",
     "lint:fix": "eslint . --ext .js,.mjs,.ts --quiet --fix",
