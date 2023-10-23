@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "bun build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
-    "start": "bun build:ts && fastify start -l info dist/app.js",
+    "test": "bun server.ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "start": "bun server.ts",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "bun build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"bun:watch:ts\" \"bun:dev:start\"",
