@@ -113,8 +113,9 @@ const AmizoneMenuOptions = {
   GET_COURSES: "courses",
   FILL_FACULTY_FEEDBACK: "fill faculty feedback",
   GET_EXAM_SCHEDULE: "exam schedule",
-  HELP: "help message", 
+  GET_HELP: "help", 
 };
+
 
 type StateHandlerFunctionOut = Promise<{
   success: boolean;
@@ -176,7 +177,7 @@ const amizoneMenuHandlersMap: Map<string, StateHandlerFunction> = new Map([
     }),
   ],
   [
-    AmizoneMenuOptions.HELP,
+    AmizoneMenuOptions.GET_HELP,
     async (): StateHandlerFunctionOut => {
       try {
         
@@ -231,7 +232,27 @@ export const handleLoggedIn = async (ctx: BotHandlerContext): Promise<User> => {
     return updatedUser;
   }
 
-  const messageHandler = amizoneMenuHandlersMap.get(inputMessage);
+  type InputType = {
+    [key: string]: string;
+  };
+  
+  const mappings: InputType = {
+    "/a": AmizoneMenuOptions.GET_ATTENDANCE,
+    "/c":AmizoneMenuOptions.GET_COURSES,
+    "/cs": AmizoneMenuOptions.GET_SCHEDULE,
+    "/f": AmizoneMenuOptions.FILL_FACULTY_FEEDBACK,
+    "/e" : AmizoneMenuOptions.GET_EXAM_SCHEDULE,
+    "/h" : AmizoneMenuOptions.GET_HELP,
+  };
+  
+  let inputMessageSlash: string = inputMessage;
+  
+  if (inputMessage in mappings) {
+    inputMessageSlash = mappings[inputMessage];
+  }
+  
+
+  const messageHandler = amizoneMenuHandlersMap.get(inputMessageSlash);
 
   if (messageHandler === undefined) {
     // TODO: send a more helpful message...

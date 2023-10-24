@@ -193,6 +193,11 @@ export const renderAmizoneMenu = () => ({
             description: "(includes location/room no.)",
           },
           {
+            id: "7",
+            title: "Help" , 
+            description: "(List of short commands)",
+          },
+          {
             id: "6",
             title: "Logout",
           },
@@ -305,7 +310,7 @@ export const renderHelpMessage = ()  =>
   
   /cs +x (for x days into the future) 
   
-  /cs -x (for z days in the past)
+  /cs -x (for x days in the past)
   
   For example:-  /cs+1 will render tomorrows Class Schedule).`; 
 
