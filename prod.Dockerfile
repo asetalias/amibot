@@ -16,4 +16,4 @@ COPY --from=builder /app/package.json /app/bun.lockb ./
 RUN bun install --frozen-lockfile --production
 COPY --from=builder /app/dist ./dist
 
-CMD ["bun", "fastify", "start", "-a", "::", "-l", "info", "dist/app.js"]
+CMD ["bun", "start"]
