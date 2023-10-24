@@ -12,8 +12,7 @@
     "start": "bun server.ts",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
-    "dev": "bun build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"bun:watch:ts\" \"bun:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"App\" -c \"cyan.bold\" \"bun start --watch\"",
     "lint": "eslint . --ext .js,.mjs,.ts --quiet",
     "lint:fix": "eslint . --ext .js,.mjs,.ts --quiet --fix",
     "fmt": "prettier \"./**/*.{js,mjs,ts}\" --write"

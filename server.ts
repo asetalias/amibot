@@ -6,7 +6,7 @@ dotenv.config();
 import Fastify from "fastify";
 
 // Require library to exit fastify process, gracefully (if possible)
-import closeWithGrace from "close-with-grace";
+//import closeWithGrace from "close-with-grace";
 
 // Instantiate Fastify with some config
 const app = Fastify({
@@ -17,17 +17,17 @@ const app = Fastify({
 app.register(import("./src/app"));
 
 // delay is the number of milliseconds for the graceful close to finish 
-const closeListeners = closeWithGrace({ delay: 500 }, async function ({ signal, err, manual }) {
-  if (err) {
-    app.log.error(err)
-  }
-  await app.close()
-} as closeWithGrace.CloseWithGraceAsyncCallback)
+// const closeListeners = closeWithGrace({ delay: 500 }, async function ({ signal, err, manual }) {
+//   if (err) {
+//     app.log.error(err)
+//   }
+//   await app.close()
+// } as closeWithGrace.CloseWithGraceAsyncCallback)
 
-app.addHook('onClose', async (instance, done) => {
-  closeListeners.uninstall()
-  done()
-})
+// app.addHook('onClose', async (instance, done) => {
+//   closeListeners.uninstall()
+//   done()
+// })
 
 // Start listening.
 app.listen({ port: parseInt(process.env.PORT || "3000") }, (err: any) => {

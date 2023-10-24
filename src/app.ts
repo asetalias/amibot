@@ -6,7 +6,7 @@ import fastifySensible from "@fastify/sensible";
 import root from "./routes/root.js";
 import webhook from "./routes/webhook.js";
 
-export default async function (fastify: FastifyInstance, opts: object) {
+export default async function (fastify: FastifyInstance) {
   // TODO: handle error and log
   const [client, dbCollection] = await database.connect();
 
