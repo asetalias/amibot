@@ -306,13 +306,15 @@ export const renderHelpMessage = ()  =>
   
   For class schedule 
   
-  /cs (For Today)
+  /cs 
+
+  Some more easy ways
   
   /cs +x (for x days into the future) 
   
   /cs -x (for x days in the past)
   
-  For example:-  /cs+1 will render tomorrows Class Schedule).`; 
+  For example:-  /cs+0 will render todays Class Schedule).`; 
 
 export const renderFacultyFeedbackInstructions =
   () => `This method will submit feedback for *all* your faculty in a single step.
