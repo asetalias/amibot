@@ -8,12 +8,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
-    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "test": "bun server.ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "start": "bun server.ts",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
-    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"App\" -c \"cyan.bold\" \"bun start --watch\"",
     "lint": "eslint . --ext .js,.mjs,.ts --quiet",
     "lint:fix": "eslint . --ext .js,.mjs,.ts --quiet --fix",
     "fmt": "prettier \"./**/*.{js,mjs,ts}\" --write"
@@ -25,6 +24,7 @@
   "author": "asetalias <asetalias1@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bun-types": "^1.0.6",
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^4.1.0",
     "amizone_api": "^0.7.0",
@@ -37,7 +37,6 @@
     "mongodb": "^4.7.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "concurrently": "^8.0.1",

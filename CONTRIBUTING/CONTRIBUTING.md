@@ -50,9 +50,9 @@ Scan through our [existing issues](https://github.com/asetalias/amibot/issues) t
 
 This describes the setup you need to test and run this application on your local computer.
 
-#### [Node.JS](https://nodejs.org/en/download/)
+#### [Bun.JS](https://bun.sh)
 
-Amibot needs Node version 18+ -- use [`nvm`](https://github.com/nvm-sh/nvm) for easy setup.
+Amibot needs Bun version 1.0.6+ -- use [`bun`](https://bun.sh) for easy setup.
 
 #### WhatsApp Business Cloud API
 
@@ -61,6 +61,7 @@ Amibot uses the [WhatsApp Business Cloud API][wa-business-cloud-api] to send and
 - [Setup a facebook developer account](https://developers.facebook.com/)
 - [Get started with WhatsApp Business Cloud API][wa-business-cloud-api]
 - Add a test number so you can interact with your local deployment of the bot.
+- Authorize your actual phone number with the whatsapp test number.
 - Setup a webhook for whatsapp events (once you start Amibot and ngrok).
 
 #### [MongoDB](https://www.mongodb.com/)
@@ -74,6 +75,9 @@ or spin up an instance locally.
 
 Make a `.env` file by copying `.env.sample` and populating the `WHATSAPP_TOKEN`, `VERIFY_TOKEN` (token used for facebook ) and other fields.
 
+`VERIFY_TOKEN` is a keyword specified in your `.env` file which has to be matched with the `Callback Token` on the facebook developer website.
+
+Populate the `DB_NAME` & `USER_COLLECTION_NAME` with any keyword of your choice, while the `MONGO_URL` should match with the cluster.
 #### ngrok
 
   We need to expose the local web server to the internet so we can set up a WhatsApp webhook for the Amibot instance. [ngrok][ngrok] is an easy-to-use service that lets us do just that!
@@ -85,10 +89,13 @@ Make a `.env` file by copying `.env.sample` and populating the `WHATSAPP_TOKEN`,
 - Expose the local Amibot instance with `ngrok http 3000 --region us` (the region is important --
     facebook currently blocks other ngrok regions.
 - Use `<ngrok-url>/webhook` as the webhook URL on the Meta developer portal.
+- Enable messages in the `webhook fields` section of the website.
 
 ### Project Setup -- Starting Amibot
 
-`yarn dev` to start Amibot with live-reload (the bot will restart with each change you make to the code).
+`bun dev` to start Amibot with live-reload (the bot will restart with each change you make to the code).
+
+Simply initate chat with bot by sending `Start`
 
 ### Commit your update
 

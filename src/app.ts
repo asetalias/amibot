@@ -1,15 +1,12 @@
 import "dotenv/config";
 
-import * as path from "path";
-import { fastifyAutoload } from "@fastify/autoload";
-import { fileURLToPath } from "url";
 import * as database from "./database.js";
 import { FastifyInstance } from "fastify";
 import fastifySensible from "@fastify/sensible";
+import root from "./routes/root.js";
+import webhook from "./routes/webhook.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export default async function (fastify: FastifyInstance, opts: object) {
+export default async function (fastify: FastifyInstance) {
   // TODO: handle error and log
   const [client, dbCollection] = await database.connect();
 
@@ -23,10 +20,12 @@ export default async function (fastify: FastifyInstance, opts: object) {
     errorHandler: false,
   });
 
-  // This loads all plugins defined in routes
-  // define your routes in one of these
-  fastify.register(fastifyAutoload, {
-    dir: path.join(__dirname, "routes"),
-    options: { db: dbCollection, ...opts },
+  //We are registering routes manually due to fastifyAutoLoad not being compatible with .ts
+  
+  fastify.register(webhook, {
+    db: dbCollection
+  });
+  fastify.register(root, {
+    db: dbCollection
   });
 }

@@ -4,7 +4,9 @@
     "moduleResolution": "nodenext",
     "outDir": "dist",
     "sourceMap": true,
-    "module": "ES2020"
+    "module": "NodeNext",
+    "types": ["bun-types"],
+    "lib": ["ESNext"]
   },
   "include": [
     "src/**/*.ts"
