@@ -197,6 +197,11 @@ export const renderAmizoneMenu = () => ({
             description: "(includes location/room no.)",
           },
           {
+            id: "7",
+            title: "Help" , 
+            description: "(List of short commands)",
+          },
+          {
             id: "6",
             title: "Logout",
           },
@@ -289,6 +294,31 @@ export const renderExamSchedule = (schedule: V1ExaminationSchedule) => {
 
 ${exams}`;
 };
+
+export const renderHelpMessage = ()  => 
+  `Help Commands 
+
+  /a - To get attendance 
+  
+  /c - To know your courses
+  
+  /f -  To give feedback 
+  
+  /l -  To Logout
+  
+  /e - Exam Schedule 
+  
+  For class schedule 
+  
+  /cs 
+
+  Some more easy ways
+  
+  /cs +x (for x days into the future) 
+  
+  /cs -x (for x days in the past)
+  
+  For example:-  /cs+0 will render todays Class Schedule).`; 
 
 export const renderFacultyFeedbackInstructions =
   () => `This method will submit feedback for *all* your faculty in a single step.
