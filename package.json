@@ -31,7 +31,7 @@
     "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "eslint-plugin-import": "^2.25.3",
-    "fastify": "^4.0.0",
+    "fastify": "^4.10.2",
     "fastify-cli": "^4.1.1",
     "fastify-plugin": "^3.0.0",
     "mongodb": "^4.7.0"
